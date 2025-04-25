@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ResidenceOfAuthority>
+    <geometry>
+        <Point>
+            <coord>
+                <X>100</X>
+                <Y>101</Y>
+            </coord>
+        </Point>
+    </geometry>
+</ResidenceOfAuthority>

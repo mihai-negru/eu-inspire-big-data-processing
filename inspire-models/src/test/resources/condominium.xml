@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FeatureCollection>
+    <member>
+<!--        <Condominium>-->
+<!--            <name>-->
+                <SpellingOfName>
+                    <text>Test</text>
+                    <script>Test</script>
+                    <transliterationScheme>Test</transliterationScheme>
+                </SpellingOfName>
+<!--                <language>en1</language>-->
+<!--                <pronunciation>-->
+<!--                    <pronunciationIPA>Test</pronunciationIPA>-->
+<!--                    <pronunciationSoundLink>https://www.test.com</pronunciationSoundLink>-->
+<!--                </pronunciation>-->
+<!--            </name>-->
+<!--        </Condominium>-->
+    </member>
+</FeatureCollection>

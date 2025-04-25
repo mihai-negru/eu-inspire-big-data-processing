@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GeographicalName>
+<!--    <spelling>-->
+<!--        <text>Test</text>-->
+<!--        <script>Test</script>-->
+<!--        <transliterationScheme>Test</transliterationScheme>-->
+<!--    </spelling>-->
+<!--    <grammaticalGender>masculine</grammaticalGender>-->
+<!--    <grammaticalNumber>singular</grammaticalNumber>-->
+    <language nil="true" nilReason="unknown"/>
+<!--    <nameStatus>official</nameStatus>-->
+<!--    <nativeness>endonym</nativeness>-->
+<!--    <pronunciation>-->
+<!--        <pronunciationIPA>Test</pronunciationIPA>-->
+<!--        <pronunciationSoundLink>https://www.test.com</pronunciationSoundLink>-->
+<!--    </pronunciation>-->
+<!--    <sourceOfName>Test</sourceOfName>-->
+</GeographicalName>

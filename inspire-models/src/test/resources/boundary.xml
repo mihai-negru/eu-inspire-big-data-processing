@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FeatureCollection>
+    <member>
+        <AdministrativeBoundary>
+            <inspireId>
+                <localId>AdministrativeBoundary_DESHPDHK0005YROI</localId>
+                <namespace>https://registry.gdi-de.org/id/de.sh.inspire.au.alkis</namespace>
+            </inspireId>
+            <beginLifespanVersion nil="true" nilReason="unknown"/>
+        </AdministrativeBoundary>
+    </member>
+</FeatureCollection>

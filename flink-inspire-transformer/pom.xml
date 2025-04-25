@@ -21,7 +21,7 @@ under the License.
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>ro.negru.mihai</groupId>
-	<artifactId>flink-inspire-converter</artifactId>
+	<artifactId>flink-inspire-transformer</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
@@ -29,12 +29,12 @@ under the License.
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<flink.version>1.20.1</flink.version>
-		<target.java.version>1.8</target.java.version>
+		<flink.version>2.0.0</flink.version>
+		<target.java.version>11</target.java.version>
 		<scala.binary.version>2.12</scala.binary.version>
 		<maven.compiler.source>${target.java.version}</maven.compiler.source>
 		<maven.compiler.target>${target.java.version}</maven.compiler.target>
-		<log4j.version>2.17.1</log4j.version>
+		<log4j.version>2.24.1</log4j.version>
 	</properties>
 
 	<repositories>
@@ -163,6 +163,46 @@ under the License.
 
 		<pluginManagement>
 			<plugins>
+
+				<!-- This improves the out-of-the-box experience in Eclipse by resolving some warnings. -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-shade-plugin</artifactId>
+										<versionRange>[3.1.1,)</versionRange>
+										<goals>
+											<goal>shade</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore/>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-compiler-plugin</artifactId>
+										<versionRange>[3.1,)</versionRange>
+										<goals>
+											<goal>testCompile</goal>
+											<goal>compile</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore/>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
