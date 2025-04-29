@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Upload File</title>
+  <!-- Optionally use FontAwesome for cool icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    body {
+      background-color: #f7f7f7;
+      font-family: 'Helvetica Neue', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 30px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      width: 400px;
+      text-align: center;
+    }
+    h2 {
+      color: #333;
+    }
+    .upload-btn {
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .upload-btn:hover {
+      background-color: #45a049;
+    }
+    .file-input {
+      margin: 20px 0;
+    }
+    .success-popup {
+      background-color: #dff0d8;
+      color: #3c763d;
+      padding: 10px;
+      border: 1px solid #d6e9c6;
+      border-radius: 4px;
+      margin-top: 20px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h2><i class="fa fa-upload"></i> Upload File</h2>
+  <form th:action="@{/upload}" method="post" enctype="multipart/form-data">
+    <input class="file-input" type="file" name="file" required>
+    <br>
+    <button class="upload-btn" type="submit">Upload</button>
+  </form>
+  <div class="success-popup" id="successPopup">
+    File uploaded successfully!
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var popup = document.getElementById("successPopup");
+
+    function showPopup() {
+      popup.style.display = "block";
+      setTimeout(function() {
+        popup.style.display = "none";
+      }, 3000);
+    }
+
+    // Listen for the custom 'uploadSuccess' event
+    document.addEventListener('uploadSuccess', showPopup);
+
+    // Initialize the flag using Thymeleaf
+    var success = /*[[${success}]]*/ false;
+
+    // Dispatch the event if the flag is true
+    if (success) {
+      document.dispatchEvent(new CustomEvent('uploadSuccess'));
+    }
+
+    // Example: elsewhere in your code, if you need to trigger it:
+    // document.dispatchEvent(new CustomEvent('uploadSuccess'));
+  });
+</script>
+</body>
+</html>
