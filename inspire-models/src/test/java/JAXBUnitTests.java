@@ -1,40 +1,20 @@
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
-import lombok.Getter;
-import lombok.Setter;
-import net.opengis.wfs.FeatureCollectionType;
-import net.opengis.wfs.WfsFactory;
-import net.opengis.wfs.impl.WfsFactoryImpl;
-import org.geotools.api.feature.simple.SimpleFeature;
-import org.geotools.api.feature.simple.SimpleFeatureType;
-import org.geotools.api.feature.type.FeatureTypeFactory;
-import org.geotools.feature.DefaultFeatureCollection;
-import org.geotools.feature.simple.SimpleFeatureBuilder;
-import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.geotools.wfs.v2_0.WFSConfiguration;
-import org.geotools.xsd.Encoder;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import ro.negru.mihai.application.schema.administrativeunits.codelist.LegalStatusValue;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 import ro.negru.mihai.application.schema.administrativeunits.datatype.ResidenceOfAuthority;
-import ro.negru.mihai.application.schema.administrativeunits.featuretype.AdministrativeBoundary;
-import ro.negru.mihai.application.schema.administrativeunits.featuretype.Condominium;
 import ro.negru.mihai.application.schema.geographicalnames.datatype.GeographicalName;
 import ro.negru.mihai.base.featuretype.FeatureCollection;
-import ro.negru.mihai.base.stereotype.Voidable;
 import ro.negru.mihai.xml.xmladapter.XmlUtils;
 
-import javax.xml.namespace.QName;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
 public class JAXBUnitTests {
@@ -56,9 +36,35 @@ public class JAXBUnitTests {
         return null;
     }
 
-    public void writeToOutputFile(final String outputFile, final Object input) throws Exception{
+    public void writeToOutputFile(final String outputFile, final Object input) throws Exception {
+        StringWriter stringWriter = new StringWriter();
+        xmlMapper.writeValue(stringWriter, input);
+        String rawXml = stringWriter.toString();
+
+        rawXml = prettyFormatXml(rawXml);
+
         try (OutputStream out = Files.newOutputStream(new File(outputFile).toPath())) {
-            xmlMapper.writeValue(out, input);
+            out.write(rawXml.getBytes(StandardCharsets.UTF_8));
+        }
+    }
+
+    private static String prettyFormatXml(String inputXml) throws Exception {
+        try {
+            InputSource src = new InputSource(new StringReader(inputXml));
+            Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(src);
+
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            transformerFactory.setAttribute("indent-number", 4);
+            Transformer transformer = transformerFactory.newTransformer();
+            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+
+            Writer out = new StringWriter();
+            transformer.transform(new DOMSource(document), new StreamResult(out));
+            return out.toString();
+        } catch (Exception e) {
+            throw new RuntimeException("Error occurs when pretty-printing xml:\n", e);
         }
     }
 

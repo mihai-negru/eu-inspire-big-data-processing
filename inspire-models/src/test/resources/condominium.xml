@@ -1,19 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <FeatureCollection>
     <member>
-<!--        <Condominium>-->
+        <Condominium>
+                <inspireId>
+                    <Identifier>
+                        <localId>OK</localId>
+                        <namespace>OK</namespace>
+                        <versionId>OK</versionId>
+                    </Identifier>
+                </inspireId>
+                <inspireId>
+                    <Identifier>
+                        <localId>OK1</localId>
+                        <namespace>OK1</namespace>
+                        <versionId>OK1</versionId>
+                    </Identifier>
+                </inspireId>
 <!--            <name>-->
-                <SpellingOfName>
-                    <text>Test</text>
-                    <script>Test</script>
-                    <transliterationScheme>Test</transliterationScheme>
-                </SpellingOfName>
-<!--                <language>en1</language>-->
-<!--                <pronunciation>-->
-<!--                    <pronunciationIPA>Test</pronunciationIPA>-->
-<!--                    <pronunciationSoundLink>https://www.test.com</pronunciationSoundLink>-->
-<!--                </pronunciation>-->
+<!--                <GeographicalName>-->
+<!--                    <SpellingOfName>-->
+<!--                        <spelling>-->
+<!--                            <text>Test</text>-->
+<!--                            <script>Test</script>-->
+<!--                            <transliterationScheme>Test</transliterationScheme>-->
+<!--                        </spelling>-->
+<!--                    </SpellingOfName>-->
+<!--                    <language>en1</language>-->
+<!--                    <PronunciationOfName>-->
+<!--                        <pronunciation>-->
+<!--                            <pronunciationIPA>Test</pronunciationIPA>-->
+<!--                            <pronunciationSoundLink>https://www.test.com</pronunciationSoundLink>-->
+<!--                        </pronunciation>-->
+<!--                    </PronunciationOfName>-->
+<!--                </GeographicalName>-->
 <!--            </name>-->
-<!--        </Condominium>-->
+        </Condominium>
     </member>
 </FeatureCollection>
