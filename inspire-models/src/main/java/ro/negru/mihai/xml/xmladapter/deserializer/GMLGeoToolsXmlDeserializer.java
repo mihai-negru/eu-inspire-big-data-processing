@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.dataformat.xml.deser.FromXmlParser;
 import org.geotools.gml3.GMLConfiguration;
 import org.geotools.xsd.Parser;
@@ -18,11 +19,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class GMLGeoToolsXmlDeserializer<T> extends JsonDeserializer<T> {
+public class GMLGeoToolsXmlDeserializer<T> extends StdDeserializer<T> {
 
     private final Class<T> clazz;
 
     public GMLGeoToolsXmlDeserializer(Class<T> clazz) {
+        super(clazz);
         this.clazz = clazz;
     }
 

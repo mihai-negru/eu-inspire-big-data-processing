@@ -1,34 +1,45 @@
 package ro.negru.mihai.xml.xmladapter;
 
-import com.ctc.wstx.shaded.msv_core.datatype.SerializationContext;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
+import com.fasterxml.jackson.databind.deser.BeanDeserializer;
+import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.fasterxml.jackson.databind.ser.BeanSerializer;
+import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 import com.fasterxml.jackson.dataformat.xml.XmlFactory;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
-import org.apache.commons.lang3.SerializationUtils;
 import org.geotools.gml3.GML;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
+import ro.negru.mihai.application.schema.administrativeunits.datatype.ResidenceOfAuthority;
+import ro.negru.mihai.application.schema.administrativeunits.featuretype.AdministrativeBoundary;
+import ro.negru.mihai.application.schema.administrativeunits.featuretype.AdministrativeUnit;
+import ro.negru.mihai.application.schema.administrativeunits.featuretype.Condominium;
+import ro.negru.mihai.application.schema.geographicalnames.datatype.GeographicalName;
+import ro.negru.mihai.application.schema.geographicalnames.datatype.PronunciationOfName;
+import ro.negru.mihai.application.schema.geographicalnames.datatype.SpellingOfName;
 import ro.negru.mihai.base.stereotype.Voidable;
+import ro.negru.mihai.base.types.datatype.Identifier;
+import ro.negru.mihai.base.types2.datatype.LocalisedCharacterString;
 import ro.negru.mihai.xml.namespace.InspireNamespaces;
 import ro.negru.mihai.xml.namespace.NamespaceXmlFactory;
+import ro.negru.mihai.xml.xmladapter.deserializer.ForceRootElementBeanDeserializer;
 import ro.negru.mihai.xml.xmladapter.deserializer.GMLGeoToolsXmlDeserializer;
 import ro.negru.mihai.xml.xmladapter.deserializer.VoidableXmlDeserializer;
+import ro.negru.mihai.xml.xmladapter.serializer.ForceRootElementBeanSerializer;
 import ro.negru.mihai.xml.xmladapter.serializer.GMLGeoToolsXmlSerializer;
 import ro.negru.mihai.xml.xmladapter.serializer.VoidableXmlSerializer;
 
-import javax.xml.stream.XMLStreamReader;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashSet;
+import java.util.Set;
 
 public final class XmlUtils {
     private XmlUtils() {}
@@ -36,7 +47,7 @@ public final class XmlUtils {
     public static class BufferedXmlMapper extends XmlMapper {
 
         public BufferedXmlMapper(XmlFactory xmlFactory) {
-            super(/*xmlFactory*/);
+            super(xmlFactory);
         }
 
         @Override
@@ -50,10 +61,32 @@ public final class XmlUtils {
     }
 
     public static class InspireDefaultModule extends SimpleModule {
-        @SuppressWarnings({"unchecked", "rawtypes"})
-        private InspireDefaultModule() {
-            super("InspireDeserializationModule");
+        private static final Set<Class<?>> forceRootElements = new HashSet<>();
 
+        static {
+            forceRootElements.add(LocalisedCharacterString.class);
+            forceRootElements.add(Identifier.class);
+
+            forceRootElements.add(SpellingOfName.class);
+            forceRootElements.add(PronunciationOfName.class);
+            forceRootElements.add(GeographicalName.class);
+
+            forceRootElements.add(Condominium.class);
+            forceRootElements.add(AdministrativeUnit.class);
+            forceRootElements.add(AdministrativeBoundary.class);
+            forceRootElements.add(ResidenceOfAuthority.class);
+        }
+
+        private InspireDefaultModule() {
+            super("InspireDefaultModule");
+
+            setCustomSerializersAndDeserializers();
+            forceRootElementsSerializerAndDeserializer();
+
+        }
+
+        @SuppressWarnings({"unchecked", "rawtypes"})
+        private void setCustomSerializersAndDeserializers() {
             addDeserializer(Voidable.class, new VoidableXmlDeserializer<>());
             addDeserializer(Point.class, new GMLGeoToolsXmlDeserializer<>(Point.class));
             addDeserializer(LineString.class, new GMLGeoToolsXmlDeserializer<>(LineString.class));
@@ -61,10 +94,39 @@ public final class XmlUtils {
             addDeserializer(Envelope.class, new GMLGeoToolsXmlDeserializer<>(Envelope.class));
 
             addSerializer(Voidable.class, (JsonSerializer) new VoidableXmlSerializer<>());
-            addSerializer(Point.class, new GMLGeoToolsXmlSerializer<>(GML._Geometry));
-            addSerializer(LineString.class, new GMLGeoToolsXmlSerializer<>(GML._Geometry));
-            addSerializer(MultiPolygon.class, new GMLGeoToolsXmlSerializer<>(GML._Geometry));
-            addSerializer(Envelope.class, new GMLGeoToolsXmlSerializer<>(GML.Envelope));
+            addSerializer(Point.class, new GMLGeoToolsXmlSerializer<>(Point.class, GML._Geometry));
+            addSerializer(LineString.class, new GMLGeoToolsXmlSerializer<>(LineString.class, GML._Geometry));
+            addSerializer(MultiPolygon.class, new GMLGeoToolsXmlSerializer<>(MultiPolygon.class, GML._Geometry));
+            addSerializer(Envelope.class, new GMLGeoToolsXmlSerializer<>(Envelope.class, GML.Envelope));
+        }
+
+        private void forceRootElementsSerializerAndDeserializer() {
+            setDeserializerModifier(new BeanDeserializerModifier() {
+
+
+
+                @Override
+                public JsonDeserializer<?> modifyDeserializer(DeserializationConfig config, BeanDescription beanDesc, JsonDeserializer<?> deserializer) {
+                    final Class<?> clazz = beanDesc.getBeanClass();
+
+                    if (deserializer instanceof BeanDeserializer beanDeserializer && forceRootElements.contains(clazz))
+                        return new ForceRootElementBeanDeserializer(beanDeserializer);
+
+                    return deserializer;
+                }
+            });
+
+            setSerializerModifier(new BeanSerializerModifier() {
+                @Override
+                public JsonSerializer<?> modifySerializer(SerializationConfig config, BeanDescription beanDesc, JsonSerializer<?> serializer) {
+                    final Class<?> clazz = beanDesc.getBeanClass();
+
+                    if (serializer instanceof BeanSerializer beanSerializer && forceRootElements.contains(clazz))
+                        return new ForceRootElementBeanSerializer(beanSerializer);
+
+                    return serializer;
+                }
+            });
         }
 
         private NamespaceXmlFactory generateNamespaceXmlFactory() {
@@ -73,8 +135,12 @@ public final class XmlUtils {
 
         public XmlMapper getXmlMapper() {
             XmlMapper xmlMapper = new BufferedXmlMapper(generateNamespaceXmlFactory());
-            xmlMapper.registerModule(this);
-            xmlMapper.registerModule(new JavaTimeModule());
+            xmlMapper.registerModules(
+                    new JavaTimeModule(),
+                    this
+            );
+
+            xmlMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
             return xmlMapper;
         }
@@ -89,12 +155,6 @@ public final class XmlUtils {
             xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             xmlMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
             xmlMapper.configure(ToXmlGenerator.Feature.WRITE_XML_DECLARATION, true);
-
-            xmlMapper.setAnnotationIntrospector(
-                    AnnotationIntrospector.pair(
-                            new JaxbAnnotationIntrospector(TypeFactory.defaultInstance()),
-                            new JacksonAnnotationIntrospector())
-                    );
 
             return xmlMapper;
         }

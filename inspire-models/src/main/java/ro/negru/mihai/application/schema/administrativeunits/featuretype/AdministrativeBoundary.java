@@ -1,7 +1,5 @@
 package ro.negru.mihai.application.schema.administrativeunits.featuretype;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
@@ -12,10 +10,6 @@ import org.locationtech.jts.geom.LineString;
 import ro.negru.mihai.application.schema.administrativeunits.codelist.AdministrativeHierarchyLevel;
 import ro.negru.mihai.application.schema.administrativeunits.codelist.LegalStatusValue;
 import ro.negru.mihai.application.schema.administrativeunits.codelist.TechnicalStatusValue;
-import ro.negru.mihai.application.schema.administrativeunits.datatype.ResidenceOfAuthority;
-import ro.negru.mihai.application.schema.geographicalnames.datatype.GeographicalName;
-import ro.negru.mihai.application.schema.geographicalnames.datatype.PronunciationOfName;
-import ro.negru.mihai.application.schema.geographicalnames.datatype.SpellingOfName;
 import ro.negru.mihai.base.featuretype.Feature;
 import ro.negru.mihai.base.stereotype.Voidable;
 import ro.negru.mihai.base.types.datatype.Identifier;

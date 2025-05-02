@@ -7,6 +7,7 @@ import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
 import ro.negru.mihai.base.stereotype.Voidable;
 import ro.negru.mihai.xml.namespace.InspireNamespaces;
 
+import javax.xml.namespace.QName;
 import java.io.IOException;
 
 public class VoidableXmlSerializer<T> extends JsonSerializer<Voidable<T>> implements ContextualSerializer {
@@ -27,8 +28,11 @@ public class VoidableXmlSerializer<T> extends JsonSerializer<Voidable<T>> implem
 
         if (value == null || value.isVoid()) {
             xmlGen.writeStartObject();
+
+            xmlGen.setNextName(new QName(InspireNamespaces.XSI, "nil", InspireNamespaces.XSI_PREFIX));
             xmlGen.setNextIsAttribute(true);
             xmlGen.writeBooleanField("nil", true);
+            xmlGen.setNextName(new QName(InspireNamespaces.XSI, "nilReason", InspireNamespaces.XSI_PREFIX));
             xmlGen.setNextIsAttribute(true);
             xmlGen.writeStringField("nilReason", value != null ? value.getReason().value() : "unknown");
             xmlGen.writeEndObject();

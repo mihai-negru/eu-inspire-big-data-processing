@@ -3,6 +3,7 @@ package ro.negru.mihai.xml.xmladapter.serializer;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
 import org.geotools.gml3.GML;
 import org.geotools.gml3.GMLConfiguration;
@@ -14,10 +15,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-public class GMLGeoToolsXmlSerializer<T> extends JsonSerializer<T> {
+public class GMLGeoToolsXmlSerializer<T> extends StdSerializer<T> {
     private final QName qname;
 
-    public GMLGeoToolsXmlSerializer(QName qname) {
+    public GMLGeoToolsXmlSerializer(Class<T> clazz, QName qname) {
+        super(clazz);
         this.qname = qname;
     }
 

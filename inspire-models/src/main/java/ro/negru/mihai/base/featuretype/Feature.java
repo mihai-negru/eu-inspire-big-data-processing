@@ -9,7 +9,6 @@ import ro.negru.mihai.application.schema.administrativeunits.featuretype.Condomi
 import ro.negru.mihai.application.schema.geographicalnames.datatype.GeographicalName;
 import ro.negru.mihai.application.schema.geographicalnames.datatype.PronunciationOfName;
 import ro.negru.mihai.application.schema.geographicalnames.datatype.SpellingOfName;
-import ro.negru.mihai.base.types.datatype.Identifier;
 
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
@@ -24,4 +23,5 @@ import ro.negru.mihai.base.types.datatype.Identifier;
         @JsonSubTypes.Type(value = AdministrativeBoundary.class,    name = "AdministrativeBoundary"),
         @JsonSubTypes.Type(value = ResidenceOfAuthority.class,      name = "ResidenceOfAuthority"),
 })
-public interface Feature {}
+public interface Feature {
+}

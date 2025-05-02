@@ -2,10 +2,9 @@ package ro.negru.mihai.xml.namespace;
 
 import com.fasterxml.jackson.core.io.IOContext;
 import com.fasterxml.jackson.dataformat.xml.XmlFactory;
-import com.fasterxml.jackson.dataformat.xml.util.StaxUtil;
 import jakarta.validation.constraints.NotNull;
+import org.codehaus.stax2.XMLStreamWriter2;
 
-import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -29,16 +28,10 @@ public class NamespaceXmlFactory extends XmlFactory {
         return applyNamespacePrefixes(super._createXmlWriter(ctx, out));
     }
 
-    private XMLStreamWriter applyNamespacePrefixes(XMLStreamWriter writer) throws IOException {
-        try {
-            for (Map.Entry<String, String> entry : prefixToNs.entrySet()) {
-                writer.setPrefix(entry.getKey(), entry.getValue());
-            }
-        } catch (XMLStreamException e) {
-            StaxUtil.throwAsGenerationException(e, null);
-        }
+    private XMLStreamWriter applyNamespacePrefixes(XMLStreamWriter writer) {
+        if (writer instanceof XMLStreamWriter2 writer2)
+            return new NamespaceStreamWriter(writer2, prefixToNs);
+
         return writer;
     }
-
-
 }
