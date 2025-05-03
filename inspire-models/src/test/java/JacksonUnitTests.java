@@ -19,7 +19,7 @@ import java.nio.file.Files;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class JAXBUnitTests {
+public class JacksonUnitTests {
     static XmlUtils.InspireXmlMapper xmlMapper;
 
     @BeforeAll
