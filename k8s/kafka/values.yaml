@@ -1,0 +1,10 @@
+metrics:
+  jmx:
+    enabled: true
+
+controller:
+  replicaCount: 3
+
+service:
+  nodePorts:
+    client: 30001
