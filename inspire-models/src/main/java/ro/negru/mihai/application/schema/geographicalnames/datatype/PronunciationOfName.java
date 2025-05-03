@@ -1,5 +1,6 @@
 package ro.negru.mihai.application.schema.geographicalnames.datatype;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import lombok.Getter;
@@ -14,9 +15,17 @@ import java.net.URI;
 @Getter
 @Setter
 public class PronunciationOfName implements Feature {
-    @JacksonXmlProperty(namespace = InspireNamespaces.GN)
-    private Voidable<String> pronunciationIPA;
 
-    @JacksonXmlProperty(namespace = InspireNamespaces.GN)
-    private Voidable<URI> pronunciationSoundLink;
+    @Getter
+    @Setter
+    public static class Holder {
+        @JacksonXmlProperty(namespace = InspireNamespaces.GN)
+        private Voidable<String> pronunciationIPA;
+
+        @JacksonXmlProperty(namespace = InspireNamespaces.GN)
+        private Voidable<URI> pronunciationSoundLink;
+    }
+
+    @JacksonXmlProperty(localName = "PronunciationOfName", namespace = InspireNamespaces.GN)
+    private Holder holder;
 }

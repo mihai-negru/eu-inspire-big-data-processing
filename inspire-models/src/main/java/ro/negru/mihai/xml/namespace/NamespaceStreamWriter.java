@@ -30,6 +30,7 @@ public class NamespaceStreamWriter implements XMLStreamWriter2 {
 
         rootWritten = true;
 
+        delegate.setDefaultNamespace(InspireNamespaces.WFS);
         for (Map.Entry<String, String> entry : prefixToNs.entrySet()) {
             delegate.setPrefix(entry.getKey(), entry.getValue());
             delegate.writeNamespace(entry.getKey(), entry.getValue());

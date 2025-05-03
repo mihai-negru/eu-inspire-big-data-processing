@@ -13,7 +13,7 @@ public final class InspireNamespaces {
     public static final String WFS = "http://www.opengis.net/wfs/2.0";
     public static final String WFS_PREFIX = "wfs";
 
-    public static final String GML = "http://www.opengis.net/gml/3.2/gml.xsd";
+    public static final String GML = "http://www.opengis.net/gml/3.2";
     public static final String GML_PREFIX = "gml";
 
     public final static String XSI = "http://www.w3.org/2001/XMLSchema-instance";
@@ -25,7 +25,7 @@ public final class InspireNamespaces {
     public final static String GMD = "https://www.isotc211.org/2005/gmd/gmd.xsd";
     public final static String GMD_PREFIX = "gmd";
 
-    public final static String BASE = "http://inspire.ec.europa.eu/schemas/2025.1/base/4.0/BaseTypes.xsd";
+    public final static String BASE = "http://inspire.ec.europa.eu/schemas/base/3.3/BaseTypes.xsd";
     public final static String BASE_PREFIX = "base";
 
     public final static String XLINK = "http://www.w3.org/1999/xlink.xsd";
@@ -37,6 +37,7 @@ public final class InspireNamespaces {
                 XSI_PREFIX, XSI,
                 AU_PREFIX, AU,
                 GMD_PREFIX, GMD,
+                GML_PREFIX, GML,
                 BASE_PREFIX, BASE,
                 XLINK_PREFIX, XLINK
                 );

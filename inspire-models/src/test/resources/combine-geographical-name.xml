@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FeatureCollection>
+    <member>
+        <GeographicalName>
+            <spelling>
+                <SpellingOfName>
+                    <text>Test1</text>
+                    <script>Test1</script>
+                    <transliterationScheme>Test1</transliterationScheme>
+                </SpellingOfName>
+            </spelling>
+            <language>en1</language>
+            <pronunciation>
+                <PronunciationOfName>
+                    <pronunciationIPA>Test1</pronunciationIPA>
+                    <pronunciationSoundLink>https://www.test1.com</pronunciationSoundLink>
+                </PronunciationOfName>
+            </pronunciation>
+        </GeographicalName>
+    </member>
+</FeatureCollection>

@@ -14,9 +14,17 @@ import ro.negru.mihai.xml.namespace.InspireNamespaces;
 @Getter
 @Setter
 public class ResidenceOfAuthority implements Feature {
-    @JacksonXmlProperty(namespace = InspireNamespaces.AU)
-    private GeographicalName name;
 
-    @JacksonXmlProperty(namespace = InspireNamespaces.AU)
-    private Voidable<Point> geometry;
+    @Getter
+    @Setter
+    public static class Holder {
+        @JacksonXmlProperty(namespace = InspireNamespaces.AU)
+        private GeographicalName name;
+
+        @JacksonXmlProperty(namespace = InspireNamespaces.AU)
+        private Voidable<Point> geometry;
+    }
+
+    @JacksonXmlProperty(localName = "ResidenceOfAuthority", namespace = InspireNamespaces.AU)
+    private Holder holder;
 }

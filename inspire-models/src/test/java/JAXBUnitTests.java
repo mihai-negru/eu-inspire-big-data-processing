@@ -1,54 +1,69 @@
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
-import ro.negru.mihai.application.schema.administrativeunits.datatype.ResidenceOfAuthority;
-import ro.negru.mihai.application.schema.geographicalnames.datatype.GeographicalName;
 import ro.negru.mihai.base.featuretype.FeatureCollection;
+import ro.negru.mihai.base.featuretype.features.administrativeunits.FCAdministrativeBoundary;
+import ro.negru.mihai.base.featuretype.features.administrativeunits.FCCondominium;
+import ro.negru.mihai.base.featuretype.features.geographicalnames.FCGeographicalName;
+import ro.negru.mihai.base.stereotype.Voidable;
 import ro.negru.mihai.xml.xmladapter.XmlUtils;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 public class JAXBUnitTests {
-    static XmlMapper xmlMapper;
+    static XmlUtils.InspireXmlMapper xmlMapper;
 
     @BeforeAll
     static void setUp() {
-        xmlMapper = XmlUtils.getModuleWithDefaults().getPrettyXmlMapper();
+        xmlMapper = XmlUtils.getModuleWithDefaults().getXmlMapper();
     }
 
-    public <T> T generateValue(final String inputFile, Class<T> clazz) {
-        try (InputStream is = getClass().getClassLoader().getResourceAsStream(inputFile)) {
-            is.mark(Integer.MAX_VALUE);
-            return xmlMapper.readValue(is, clazz);
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-        }
+    private <T extends FeatureCollection<?>> T generateValue(final String inputFile, Class<T> clazz) {
+        T finalValue = assertDoesNotThrow(() -> {
+            InputStream is = getClass().getClassLoader().getResourceAsStream(inputFile);
+            if (is == null)
+                throw new FileNotFoundException(inputFile);
 
-        return null;
+            T value = xmlMapper.readFeature(is, clazz);
+            is.close();
+
+            return value;
+        });
+
+        assertNotNull(finalValue);
+
+        return finalValue;
     }
 
-    public void writeToOutputFile(final String outputFile, final Object input) throws Exception {
-        StringWriter stringWriter = new StringWriter();
-        xmlMapper.writeValue(stringWriter, input);
-        String rawXml = stringWriter.toString();
+    public void writeToOutputFile(final String outputFile, final Object inputCollection, boolean prettyPrint) {
+        assertDoesNotThrow(() -> {
+            final StringWriter stringWriter = new StringWriter();
 
-        rawXml = prettyFormatXml(rawXml);
+            xmlMapper.writeValue(stringWriter, inputCollection);
 
-        try (OutputStream out = Files.newOutputStream(new File(outputFile).toPath())) {
-            out.write(rawXml.getBytes(StandardCharsets.UTF_8));
-        }
+            String processedXmlContent = stringWriter.toString();
+            if (prettyPrint) {
+                processedXmlContent = prettyFormatXml(processedXmlContent);
+            }
+
+            OutputStream out = Files.newOutputStream(new File(outputFile).toPath());
+
+            out.write(processedXmlContent.getBytes(StandardCharsets.UTF_8));
+
+            out.close();
+        });
     }
 
-    private static String prettyFormatXml(String inputXml) throws Exception {
+    private static String prettyFormatXml(String inputXml) {
         try {
             InputSource src = new InputSource(new StringReader(inputXml));
             Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(src);
@@ -69,50 +84,26 @@ public class JAXBUnitTests {
     }
 
     @Test
-    public void testCondominium() throws Exception {
-        FeatureCollection v = generateValue("condominium.xml", FeatureCollection.class);
-        writeToOutputFile("target/condominium.xml", v);
+    public void condominium() {
+        FCCondominium v = generateValue("condominium-full.xml", FCCondominium.class);
+        writeToOutputFile("target/condominium-full.xml", v, true);
     }
 
     @Test
-    public void testGeoName() throws Exception {
-        GeographicalName v = generateValue("geoname.xml", GeographicalName.class);
-        writeToOutputFile("target/geoname.xml", v);
+    public void combineFeatures() {
+        FCGeographicalName geoName = generateValue("combine-geographical-name.xml", FCGeographicalName.class);
+        FCCondominium cond = generateValue("combine-condominium.xml", FCCondominium.class);
+
+        cond.getMember().get(0).getHolder().getName().add(
+                Voidable.ofValue(geoName.getMember().get(0))
+        );
+
+        writeToOutputFile("target/combine-features.xml", cond, true);
     }
 
     @Test
-    public void testResidenceOfAuthority() throws Exception {
-        ResidenceOfAuthority v = generateValue("residence.xml", ResidenceOfAuthority.class);
-
-        System.err.println(v.toString());
-
-        writeToOutputFile("target/residence.xml", v);
-    }
-
-    @Test
-    public void testFeatureType() throws Exception {
-        FeatureCollection v = generateValue("feature.xml", FeatureCollection.class);
-
-        System.err.println(v.toString());
-
-        writeToOutputFile("target/feature.xml", v);
-    }
-
-    @Test
-    public void testFeatureSpellingType() throws Exception {
-        FeatureCollection v = generateValue("feature-spelling.xml", FeatureCollection.class);
-
-        System.err.println(v.toString());
-
-        writeToOutputFile("target/feature-spelling.xml", v);
-    }
-
-    @Test
-    public void testBoundary() throws Exception {
-        FeatureCollection v = generateValue("boundary.xml", FeatureCollection.class);
-
-        System.err.println(v.toString());
-
-        writeToOutputFile("target/boundary.xml", v);
+    public void testExternFeature() {
+        FCAdministrativeBoundary boundary = generateValue("extern-feature.xml", FCAdministrativeBoundary.class);
+        writeToOutputFile("target/extern-feature.xml", boundary, false);
     }
 }

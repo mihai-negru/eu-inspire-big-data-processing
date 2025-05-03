@@ -10,7 +10,7 @@
         <AdministrativeBoundary gml:id="AdministrativeBoundary_DESHPDHK0005YROI">
             <gml:identifier codeSpace="http://inspire.ec.europa.eu/ids">https://registry.gdi-de.org/id/de.sh.inspire.au.alkis/AdministrativeBoundary_DESHPDHK0005YROI</gml:identifier>
             <geometry>
-                <gml:LineString gml:id="o11002__administrativeboundary.id.45755976.position.Geom_0" srsName="http://www.opengis.net/def/crs/epsg/0/25832" srsDimension="2">
+                <gml:LineString id="o11002__administrativeboundary.id.45755976.position.Geom_0" srsName="http://www.opengis.net/def/crs/epsg/0/25832" srsDimension="2">
                     <gml:posList>599721.064 5914972.951 599722.436 5914972.255</gml:posList>
                 </gml:LineString>
             </geometry>

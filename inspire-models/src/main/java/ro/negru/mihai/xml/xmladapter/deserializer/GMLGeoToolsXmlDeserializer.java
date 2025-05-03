@@ -22,10 +22,13 @@ import java.util.regex.Pattern;
 public class GMLGeoToolsXmlDeserializer<T> extends StdDeserializer<T> {
 
     private final Class<T> clazz;
+    private final Parser parser;
 
     public GMLGeoToolsXmlDeserializer(Class<T> clazz) {
         super(clazz);
         this.clazz = clazz;
+
+        parser = new Parser(new GMLConfiguration());
     }
 
     @Override
@@ -40,8 +43,7 @@ public class GMLGeoToolsXmlDeserializer<T> extends StdDeserializer<T> {
         }
 
         try {
-            Parser gmlParser = new Parser(new GMLConfiguration());
-            Object obj = gmlParser.parse(new StringReader(rawXml));
+            Object obj = parser.parse(new StringReader(rawXml));
             if (clazz.isInstance(obj)) {
                 return clazz.cast(obj);
             } else

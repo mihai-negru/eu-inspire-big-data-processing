@@ -3,6 +3,7 @@ package ro.negru.mihai.xml.xmladapter.deserializer;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
+import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 import com.fasterxml.jackson.dataformat.xml.deser.FromXmlParser;
 import ro.negru.mihai.base.stereotype.Voidable;
 
@@ -15,13 +16,15 @@ import java.util.Set;
 public class VoidableXmlDeserializer<T> extends JsonDeserializer<Voidable<T>> implements ContextualDeserializer {
 
     private final JsonDeserializer<T> innerDeserializer;
+    private final TypeDeserializer innerTypeDeserializer;
 
     public VoidableXmlDeserializer() {
-        this(null);
+        this(null, null);
     }
 
-    public VoidableXmlDeserializer(JsonDeserializer<T> innerDeserializer) {
+    public VoidableXmlDeserializer(JsonDeserializer<T> innerDeserializer, TypeDeserializer innerTypeDeserializer) {
         this.innerDeserializer = innerDeserializer;
+        this.innerTypeDeserializer = innerTypeDeserializer;
     }
 
     private Map<String, String> getAttributeValueIgnoreNS(XMLStreamReader reader, Set<String> attrs) {
@@ -59,7 +62,13 @@ public class VoidableXmlDeserializer<T> extends JsonDeserializer<Voidable<T>> im
             }
         }
 
-        T value = innerDeserializer.deserialize(p, ctx);
+        final T value;
+        if (innerTypeDeserializer != null)
+            value = (T) innerTypeDeserializer.deserializeTypedFromAny(p, ctx);
+        else if (innerDeserializer != null)
+            value = innerDeserializer.deserialize(p, ctx);
+        else
+            value = null;
         return Voidable.ofValue(value);
     }
 
@@ -78,6 +87,6 @@ public class VoidableXmlDeserializer<T> extends JsonDeserializer<Voidable<T>> im
         if (genericType == null || Voidable.class.isAssignableFrom(genericType.getRawClass()))
             throw JsonMappingException.from(ctx, "Inner type of " + genericType + " is not a Voidable");
 
-        return new VoidableXmlDeserializer<>(ctx.findContextualValueDeserializer(genericType, property));
+        return new VoidableXmlDeserializer<>(ctx.findContextualValueDeserializer(genericType, property), ctx.getConfig().findTypeDeserializer(genericType));
     }
 }

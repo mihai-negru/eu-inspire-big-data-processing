@@ -2,6 +2,7 @@ package ro.negru.mihai.xml.xmladapter.serializer;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.ContextualSerializer;
 import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
 import ro.negru.mihai.base.stereotype.Voidable;
@@ -13,13 +14,15 @@ import java.io.IOException;
 public class VoidableXmlSerializer<T> extends JsonSerializer<Voidable<T>> implements ContextualSerializer {
 
     private final JsonSerializer<T> innerSerializer;
+    private final JsonSerializer<T> innerTypeSerializer;
 
-    public VoidableXmlSerializer(JsonSerializer<T> innerSerializer) {
+    public VoidableXmlSerializer(JsonSerializer<T> innerSerializer, JsonSerializer<T> innerTypeSerializer) {
         this.innerSerializer = innerSerializer;
+        this.innerTypeSerializer = innerTypeSerializer;
     }
 
     public VoidableXmlSerializer() {
-        this(null);
+        this(null, null);
     }
 
     @Override
@@ -28,7 +31,6 @@ public class VoidableXmlSerializer<T> extends JsonSerializer<Voidable<T>> implem
 
         if (value == null || value.isVoid()) {
             xmlGen.writeStartObject();
-
             xmlGen.setNextName(new QName(InspireNamespaces.XSI, "nil", InspireNamespaces.XSI_PREFIX));
             xmlGen.setNextIsAttribute(true);
             xmlGen.writeBooleanField("nil", true);
@@ -37,7 +39,10 @@ public class VoidableXmlSerializer<T> extends JsonSerializer<Voidable<T>> implem
             xmlGen.writeStringField("nilReason", value != null ? value.getReason().value() : "unknown");
             xmlGen.writeEndObject();
         } else {
-            innerSerializer.serialize(value.getValue(), gen, serializers);
+            if (innerTypeSerializer != null)
+                innerTypeSerializer.serialize(value.getValue(), gen, serializers);
+            else if (innerSerializer != null)
+                innerSerializer.serialize(value.getValue(), gen, serializers);
         }
     }
 
@@ -56,6 +61,6 @@ public class VoidableXmlSerializer<T> extends JsonSerializer<Voidable<T>> implem
         if (genericType == null || Voidable.class.isAssignableFrom(genericType.getRawClass()))
             throw JsonMappingException.from(prov, "Inner type of " + genericType + " is not a Voidable");
 
-        return new VoidableXmlSerializer<>(prov.findValueSerializer(genericType, property));
+        return new VoidableXmlSerializer<>(prov.findValueSerializer(genericType, property), prov.findTypedValueSerializer(genericType, true, property));
     }
 }

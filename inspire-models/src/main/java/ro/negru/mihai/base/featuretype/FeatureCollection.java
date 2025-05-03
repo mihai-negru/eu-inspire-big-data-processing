@@ -4,6 +4,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import jakarta.validation.constraints.Size;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import lombok.Getter;
 import lombok.Setter;
 import org.locationtech.jts.geom.Envelope;
@@ -16,33 +17,33 @@ import java.util.List;
 @JacksonXmlRootElement(localName = "FeatureCollection", namespace = InspireNamespaces.WFS)
 @Getter
 @Setter
-public class FeatureCollection {
-//    @JacksonXmlProperty(namespace = InspireNamespaces.WFS)
-//    @JacksonXmlElementWrapper(useWrapping = false)
-//    private List<Envelope> boundedBy;
+public class FeatureCollection<T> {
+    @JacksonXmlProperty(namespace = InspireNamespaces.WFS)
+    @JacksonXmlElementWrapper(useWrapping = false)
+    private List<Envelope> boundedBy;
 
     @JacksonXmlProperty(namespace = InspireNamespaces.WFS)
     @JacksonXmlElementWrapper(useWrapping = false)
     @Size(min = 1)
-    private List<Condominium> member;
+    private List<T> member;
 
-//    @JacksonXmlProperty(namespace = InspireNamespaces.WFS)
-//    @JacksonXmlElementWrapper(useWrapping = false)
-//    private List<FeatureCollection> additionalObjects;
-//
-//    @JacksonXmlProperty(namespace = InspireNamespaces.WFS)
-//    @JacksonXmlElementWrapper(useWrapping = false)
-//    private List<Object> truncatedResponse;
-//
-//    @JacksonXmlProperty(isAttribute = true, namespace = InspireNamespaces.WFS)
-//    private String numberReturned;
-//
-//    @JacksonXmlProperty(isAttribute = true, namespace = InspireNamespaces.WFS)
-//    private String numberMatched;
-//
-//    @JacksonXmlProperty(isAttribute = true, namespace = InspireNamespaces.WFS)
-//    private String timeStamp;
-//
-//    @JacksonXmlProperty(isAttribute = true, namespace = InspireNamespaces.WFS)
-//    private String lockId;
+    @JacksonXmlProperty(namespace = InspireNamespaces.WFS)
+    @JacksonXmlElementWrapper(useWrapping = false)
+    private List<Object> additionalObjects;
+
+    @JacksonXmlProperty(namespace = InspireNamespaces.WFS)
+    @JacksonXmlElementWrapper(useWrapping = false)
+    private List<Object> truncatedResponse;
+
+    @JacksonXmlProperty(isAttribute = true)
+    private String numberReturned;
+
+    @JacksonXmlProperty(isAttribute = true)
+    private String numberMatched;
+
+    @JacksonXmlProperty(isAttribute = true)
+    private String timeStamp;
+
+    @JacksonXmlProperty(isAttribute = true)
+    private String lockId;
 }
