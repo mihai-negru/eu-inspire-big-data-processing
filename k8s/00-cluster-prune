@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+minikube stop
+minikube delete --all
+sudo brew services stop socket_vmnet
+
+remove_hosts_entry() {
+  local DNS_NAME="$1"
+
+  echo "Removing $DNS_NAME from /etc/hosts..."
+
+  if sudo sed -i '' "/[[:space:]]$DNS_NAME/d" /etc/hosts; then
+    echo "Successfully removed $DNS_NAME from /etc/hosts"
+  else
+    echo "Failed to remove $DNS_NAME from /etc/hosts"
+    exit 1
+  fi
+}
+
+remove_hosts_entry "argocd.local"

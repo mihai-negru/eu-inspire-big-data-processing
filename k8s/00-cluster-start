@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+sudo brew services start socket_vmnet
+
+minikube config set cpus 6
+minikube config set memory 8192
+minikube config set disk-size 50g
+
+minikube start --driver=qemu --network=socket_vmnet --cni=calico
+sudo minikube tunnel > /dev/null 2>&1 < /dev/null &
