@@ -20,6 +20,7 @@ spec:
       containers:
         - name: taskmanager
           image: apache/flink:1.20.1-scala_2.12
+          imagePullPolicy: Always
           args: ["taskmanager"]
           ports:
             - containerPort: 6122
