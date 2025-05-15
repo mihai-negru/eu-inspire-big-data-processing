@@ -1,41 +1,41 @@
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: flink
-  namespace: argocd
-spec:
-  project: default
-  source:
-    repoURL: https://github.com/mihai-negru/BachelorDegree
-    targetRevision: HEAD
-    path: k8s/flink
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: flink
-  syncPolicy:
-    automated:
-      selfHeal: true
-      prune: true
-    syncOptions:
-      - CreateNamespace=true
-#---
 #apiVersion: argoproj.io/v1alpha1
 #kind: Application
 #metadata:
-#  name: kafka
+#  name: flink
 #  namespace: argocd
 #spec:
 #  project: default
 #  source:
 #    repoURL: https://github.com/mihai-negru/BachelorDegree
 #    targetRevision: HEAD
-#    path: k8s/kafka
+#    path: k8s/flink
 #  destination:
 #    server: https://kubernetes.default.svc
-#    namespace: kafka
+#    namespace: flink
 #  syncPolicy:
 #    automated:
 #      selfHeal: true
 #      prune: true
 #    syncOptions:
 #      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kafka
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/mihai-negru/BachelorDegree
+    targetRevision: HEAD
+    path: k8s/kafka
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kafka
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
+    syncOptions:
+      - CreateNamespace=true
