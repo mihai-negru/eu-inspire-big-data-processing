@@ -5,6 +5,12 @@ metrics:
 controller:
   replicaCount: 3
 
+  readinessProbe:
+    initialDelaySeconds: 15
+    periodSeconds: 30
+    timeoutSeconds: 30
+    failureThreshold: 10
+
 service:
   nodePorts:
     client: 30001
