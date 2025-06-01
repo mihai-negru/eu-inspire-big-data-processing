@@ -9,10 +9,11 @@ on:
       - flink-inspire-transformer/src/main/**
       - inspire-models/pom.xml
       - inspire-models/src/main/**
+      - Dockerfile
 
 env:
   REGISTRY: ghcr.io
-  SERVICE: flink-inspire
+  SERVICE: ${{ github.repository_owner }}/flink-inspire
   TAG: latest
 
 jobs:
@@ -45,5 +46,5 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.SERVICE }}:${{env.TAG}}
+          tags: ${{ env.REGISTRY }}/${{ env.SERVICE }}:${{ env.TAG }}
           platforms: linux/arm64
