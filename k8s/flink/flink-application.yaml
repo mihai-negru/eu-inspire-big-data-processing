@@ -1,7 +1,7 @@
 apiVersion: flink.apache.org/v1beta1
 kind: FlinkDeployment
 metadata:
-  name: flink-inspire-application
+  name: flink-inspire
   namespace: flink
 spec:
   image: matrix22/flink-inspire:latest

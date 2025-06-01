@@ -14,3 +14,27 @@ controller:
 service:
   nodePorts:
     client: 30001
+
+provisioning:
+  topics:
+    - name: raw/FCAdministrativeBoundary
+      partitions: 1
+      replicationFactor: 1
+    - name: raw/FCAdministrativeUnit
+      partitions: 1
+      replicationFactor: 1
+    - name: raw/FCCondominium
+      partitions: 1
+      replicationFactor: 1
+    - name: raw/FCResidenceOfAuthority
+      partitions: 1
+      replicationFactor: 1
+    - name: raw/FCGeographicalName
+      partitions: 1
+      replicationFactor: 1
+    - name: raw/FCPronunciationOfName
+      partitions: 1
+      replicationFactor: 1
+    - name: raw/FCSpellingOfName
+      partitions: 1
+      replicationFactor: 1
