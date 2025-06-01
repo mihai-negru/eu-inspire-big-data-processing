@@ -1,9 +1,12 @@
 package ro.negru.mihai;
 
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
+import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.connector.kafka.source.KafkaSource;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.util.Collector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ro.negru.mihai.schema.TopicAwareRecord;
@@ -27,20 +30,29 @@ public class DataStreamHandler {
         return env.fromSource(ingest, WatermarkStrategy.noWatermarks(), sourceName);
     }
 
-    public static DataStream<String> transformToInspireCompliant(DataStream<TopicAwareRecord> ingest) {
-        return ingest.flatMap((record, out) -> {
-            Object transformed;
+    public static class InspireFlatMapTransform implements FlatMapFunction<TopicAwareRecord, String> {
+        @Override
+        public void flatMap(TopicAwareRecord record, Collector<String> collector) throws Exception {
+            Object transformed = null;
             try (InputStream input = new ByteArrayInputStream(record.text().getBytes())) {
+                LOGGER.info("InspireFlatMapTransform record: {}", record.topic());
+                LOGGER.info("InspireFlatMapTransform text: {}", record.text());
                 transformed = xmlMapper.readFeature(input, record.topic());
+            } catch (Exception e) {
+                LOGGER.error("InspireFlatMapTransform error", e);
             }
 
-            final StringWriter writer = new StringWriter();
-            xmlMapper.writeValue(writer, transformed);
+            if (transformed != null) {
+                final StringWriter writer = new StringWriter();
+                xmlMapper.writeValue(writer, transformed);
 
-            final String inspireCompliant = writer.toString();
-            out.collect(inspireCompliant);
+                final String inspireCompliant = writer.toString();
+                collector.collect(inspireCompliant);
 
-            LOGGER.info("Inspire compliant: {}", inspireCompliant);
-        });
+                LOGGER.info("Inspire compliant: {}", inspireCompliant);
+            } else {
+                LOGGER.error("No transformed inspire record, because something went wrong");
+            }
+        }
     }
 }

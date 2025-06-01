@@ -1,11 +1,9 @@
 package ro.negru.mihai;
 
-import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.connector.kafka.source.KafkaSource;
 import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsInitializer;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.NewTopic;
-import org.apache.kafka.common.errors.TopicExistsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ro.negru.mihai.schema.TopicAwareRecord;
@@ -14,9 +12,7 @@ import ro.negru.mihai.schema.TopicAwareRecordSchema;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import java.util.regex.Pattern;
 
@@ -34,15 +30,16 @@ public class KafkaHandler {
                 LOGGER.info("Creating topic {}", topicName);
             }
 
-            adminClient.createTopics(topics).all().get(10, TimeUnit.SECONDS);
-
-        } catch (TopicExistsException | ExecutionException | InterruptedException | TimeoutException e) {
+            adminClient.createTopics(topics).all().get(10, TimeUnit.MINUTES);
+            LOGGER.info("Successfully created topics");
+        } catch (Exception e) {
+            LOGGER.error("Failed to create topics");
             LOGGER.error(e.getMessage(), e);
         }
     }
 
     public static List<String> createRawTopics(final List<String> topicNames) {
-        return topicNames.stream().map(topic -> "raw/" + topic).collect(Collectors.toList());
+        return topicNames.stream().map(topic -> "raw." + topic).collect(Collectors.toList());
     }
 
     public static KafkaSource<TopicAwareRecord> createKafkaSource(final String bootstrapServer, final String topicPrefix, final String groupId) {
@@ -63,7 +60,7 @@ public class KafkaHandler {
 
         return KafkaSource.<TopicAwareRecord>builder()
                 .setBootstrapServers(bootstrapServer)
-                .setTopicPattern(Pattern.compile(topicPrefix + "/.*"))
+                .setTopicPattern(Pattern.compile(topicPrefix + "\\..*"))
                 .setGroupId(groupId)
                 .setStartingOffsets(OffsetsInitializer.earliest())
                 .setDeserializer(new TopicAwareRecordSchema(topicPrefix))

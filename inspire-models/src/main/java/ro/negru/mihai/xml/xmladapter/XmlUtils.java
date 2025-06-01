@@ -33,9 +33,23 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public final class XmlUtils {
     private XmlUtils() {}
+
+    private final static List<Class<?>> FEATURES;
+    static {
+        FEATURES = List.of(
+                FCAdministrativeBoundary.class,
+                FCAdministrativeUnit.class,
+                FCCondominium.class,
+                FCResidenceOfAuthority.class,
+                FCGeographicalName.class,
+                FCPronunciationOfName.class,
+                FCSpellingOfName.class
+        );
+    }
 
     public static class InspireXmlMapper extends XmlMapper {
 
@@ -58,12 +72,16 @@ public final class XmlUtils {
 
         @SuppressWarnings("unchecked")
         public <T extends FeatureCollection<?>> T readFeature(InputStream src, String valueType) throws IOException {
-            try {
-                Class<T> clazz = (Class<T>) Class.forName(valueType);
-                return readFeature(src, clazz);
-            } catch (ClassNotFoundException e) {
-                return null;
+            Class<T> clazz = null;
+            for (Class<?> fClazz : FEATURES) {
+                if (fClazz.getSimpleName().equals(valueType)) {
+                    clazz = (Class<T>) fClazz;
+                    break;
+                }
             }
+
+            if (clazz == null) return null;
+            return readFeature(src, clazz);
         }
     }
 
@@ -130,14 +148,6 @@ public final class XmlUtils {
     }
 
     public static List<String> getAvailableFeatures() {
-        return List.of(
-                FCAdministrativeBoundary.class.getSimpleName(),
-                FCAdministrativeUnit.class.getSimpleName(),
-                FCCondominium.class.getSimpleName(),
-                FCResidenceOfAuthority.class.getSimpleName(),
-                FCGeographicalName.class.getSimpleName(),
-                FCPronunciationOfName.class.getSimpleName(),
-                FCSpellingOfName.class.getSimpleName()
-        );
+        return FEATURES.stream().map(Class::getSimpleName).collect(Collectors.toList());
     }
 }

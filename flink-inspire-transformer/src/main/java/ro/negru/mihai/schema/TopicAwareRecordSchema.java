@@ -14,7 +14,7 @@ public class TopicAwareRecordSchema implements KafkaRecordDeserializationSchema<
     private final String topicPrefix;
 
     public TopicAwareRecordSchema(final String removeTopicPrefix) {
-        topicPrefix = removeTopicPrefix + '/';
+        topicPrefix = removeTopicPrefix + '.';
         textDeserializer = new SimpleStringSchema();
     }
 

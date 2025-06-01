@@ -18,6 +18,7 @@
 
 package ro.negru.mihai;
 
+import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.core.execution.CheckpointingMode;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -25,21 +26,21 @@ import ro.negru.mihai.schema.TopicAwareRecord;
 import ro.negru.mihai.xml.xmladapter.XmlUtils;
 
 public class DataStreamJob {
+	private static final String bootstrapServers = "kafka.kafka.svc.cluster.local:9092";
 
 	public static void main(String[] args) throws Exception {
-
-		KafkaHandler.createTopicIfNotExist("broker:9092", XmlUtils.getAvailableFeatures());
-
 		final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 		env.enableCheckpointing(10000);
 		env.getCheckpointConfig().setCheckpointingConsistencyMode(CheckpointingMode.EXACTLY_ONCE);
 
+//		KafkaHandler.createTopicIfNotExist(bootstrapServers, XmlUtils.getAvailableFeatures());
+
 		final DataStream<TopicAwareRecord> rawDataStream = DataStreamHandler.createDataStream(
 				env,
-				KafkaHandler.createKafkaSource("broker:9092", "raw", "raw-data"),
+				KafkaHandler.createKafkaSource(bootstrapServers, "raw", "raw-data"),
 				"kafka-raw-data");
 
-		final DataStream<String> transformedDataStream = DataStreamHandler.transformToInspireCompliant(rawDataStream);
+		final DataStream<String> transformedDataStream = rawDataStream.flatMap(new DataStreamHandler.InspireFlatMapTransform()).returns(Types.STRING);
 //
 //		DataStream<String> sinker = data.flatMap((String str, Collector<Integer> out) -> {
 //			// Split by one or more whitespace characters
