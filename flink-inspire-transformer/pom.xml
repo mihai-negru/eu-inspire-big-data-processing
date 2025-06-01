@@ -22,7 +22,7 @@ under the License.
 
 	<groupId>ro.negru.mihai</groupId>
 	<artifactId>flink-inspire-transformer</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<packaging>jar</packaging>
 
 	<name>Flink Quickstart Job</name>
@@ -30,7 +30,7 @@ under the License.
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<flink.version>1.20.1</flink.version>
-		<target.java.version>1.8</target.java.version>
+		<target.java.version>17</target.java.version>
 		<scala.binary.version>2.12</scala.binary.version>
 		<maven.compiler.source>${target.java.version}</maven.compiler.source>
 		<maven.compiler.target>${target.java.version}</maven.compiler.target>
@@ -72,17 +72,6 @@ under the License.
 			<version>3.3.0-1.20</version>
 		</dependency>
 
-		<!-- Add connector dependencies here. They must be in the default scope (compile). -->
-
-		<!-- Example:
-
-		<dependency>
-			<groupId>org.apache.flink</groupId>
-			<artifactId>flink-connector-kafka</artifactId>
-			<version>3.0.0-1.17</version>
-		</dependency>
-		-->
-
 		<!-- Add logging framework, to produce console output when running in the IDE. -->
 		<!-- These dependencies are excluded from the application JAR by default. -->
 		<dependency>
@@ -102,6 +91,11 @@ under the License.
 			<artifactId>log4j-core</artifactId>
 			<version>${log4j.version}</version>
 			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>ro.negru.mihai</groupId>
+			<artifactId>inspire-models</artifactId>
+			<version>1.0.0</version>
 		</dependency>
 	</dependencies>
 

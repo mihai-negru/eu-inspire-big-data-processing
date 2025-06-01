@@ -12,7 +12,15 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
+import ro.negru.mihai.base.featuretype.Feature;
 import ro.negru.mihai.base.featuretype.FeatureCollection;
+import ro.negru.mihai.base.featuretype.features.administrativeunits.FCAdministrativeBoundary;
+import ro.negru.mihai.base.featuretype.features.administrativeunits.FCAdministrativeUnit;
+import ro.negru.mihai.base.featuretype.features.administrativeunits.FCCondominium;
+import ro.negru.mihai.base.featuretype.features.administrativeunits.FCResidenceOfAuthority;
+import ro.negru.mihai.base.featuretype.features.geographicalnames.FCGeographicalName;
+import ro.negru.mihai.base.featuretype.features.geographicalnames.FCPronunciationOfName;
+import ro.negru.mihai.base.featuretype.features.geographicalnames.FCSpellingOfName;
 import ro.negru.mihai.base.stereotype.Voidable;
 import ro.negru.mihai.xml.namespace.InspireNamespaces;
 import ro.negru.mihai.xml.namespace.NamespaceXmlFactory;
@@ -24,6 +32,7 @@ import ro.negru.mihai.xml.xmladapter.serializer.VoidableXmlSerializer;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 public final class XmlUtils {
     private XmlUtils() {}
@@ -45,6 +54,16 @@ public final class XmlUtils {
 
         public <T extends FeatureCollection<?>> T readFeature(InputStream src, Class<T> valueType) throws IOException {
             return readValue(src, valueType);
+        }
+
+        @SuppressWarnings("unchecked")
+        public <T extends FeatureCollection<?>> T readFeature(InputStream src, String valueType) throws IOException {
+            try {
+                Class<T> clazz = (Class<T>) Class.forName(valueType);
+                return readFeature(src, clazz);
+            } catch (ClassNotFoundException e) {
+                return null;
+            }
         }
     }
 
@@ -108,5 +127,17 @@ public final class XmlUtils {
 
     public static InspireDefaultModule getModuleWithDefaults() {
         return new InspireDefaultModule();
+    }
+
+    public static List<String> getAvailableFeatures() {
+        return List.of(
+                FCAdministrativeBoundary.class.getSimpleName(),
+                FCAdministrativeUnit.class.getSimpleName(),
+                FCCondominium.class.getSimpleName(),
+                FCResidenceOfAuthority.class.getSimpleName(),
+                FCGeographicalName.class.getSimpleName(),
+                FCPronunciationOfName.class.getSimpleName(),
+                FCSpellingOfName.class.getSimpleName()
+        );
     }
 }

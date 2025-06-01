@@ -18,61 +18,51 @@
 
 package ro.negru.mihai;
 
-import org.apache.flink.api.common.eventtime.WatermarkStrategy;
-import org.apache.flink.api.common.serialization.SimpleStringSchema;
-import org.apache.flink.api.common.typeinfo.Types;
-import org.apache.flink.connector.kafka.sink.KafkaRecordSerializationSchema;
-import org.apache.flink.connector.kafka.sink.KafkaSink;
-import org.apache.flink.connector.kafka.source.KafkaSource;
-import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsInitializer;
+import org.apache.flink.core.execution.CheckpointingMode;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.util.Collector;
-
-import java.util.regex.Pattern;
+import ro.negru.mihai.schema.TopicAwareRecord;
+import ro.negru.mihai.xml.xmladapter.XmlUtils;
 
 public class DataStreamJob {
 
 	public static void main(String[] args) throws Exception {
 
-		KafkaTopicCreator.createTopicIfNotExist("broker:9092", "test-topic");
-
+		KafkaHandler.createTopicIfNotExist("broker:9092", XmlUtils.getAvailableFeatures());
 
 		final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+		env.enableCheckpointing(10000);
+		env.getCheckpointConfig().setCheckpointingConsistencyMode(CheckpointingMode.EXACTLY_ONCE);
 
-		final KafkaSource<String> source = KafkaSource.<String>builder()
-				.setBootstrapServers("broker:9092")
-				.setTopicPattern(Pattern.compile("test-topic.*"))
-				.setGroupId("group-id")
-				.setStartingOffsets(OffsetsInitializer.earliest())
-				.setValueOnlyDeserializer(new SimpleStringSchema())
-				.setProperty("partition.discovery.interval.ms", "10000")
-				.setProperty("allow.auto.create.topics", "true")
-				.build();
+		final DataStream<TopicAwareRecord> rawDataStream = DataStreamHandler.createDataStream(
+				env,
+				KafkaHandler.createKafkaSource("broker:9092", "raw", "raw-data"),
+				"kafka-raw-data");
 
-		DataStream<String> data = env.fromSource(source, WatermarkStrategy.noWatermarks(), "Kafka Source");
+		final DataStream<String> transformedDataStream = DataStreamHandler.transformToInspireCompliant(rawDataStream);
+//
+//		DataStream<String> sinker = data.flatMap((String str, Collector<Integer> out) -> {
+//			// Split by one or more whitespace characters
+//			for (String token : str.split("\\s+")) {
+//				try {
+//					out.collect(Integer.parseInt(token));
+//				} catch (NumberFormatException e) {
+//					// Optionally log or handle tokens that cannot be parsed
+//				}
+//			}
+//		}).returns(Types.INT).keyBy(num -> 0).reduce(Integer::sum).map(Object::toString);
+//
+//		KafkaSink<String> sink = KafkaSink.<String>builder()
+//				.setBootstrapServers("broker:9092")
+//				.setRecordSerializer(KafkaRecordSerializationSchema.builder()
+//						.setTopic("test-response")
+//						.setValueSerializationSchema(new SimpleStringSchema())
+//						.build()
+//				)
+//				.build();
+//
+//		sinker.sinkTo(sink);
 
-		DataStream<String> sinker = data.flatMap((String str, Collector<Integer> out) -> {
-			// Split by one or more whitespace characters
-			for (String token : str.split("\\s+")) {
-				try {
-					out.collect(Integer.parseInt(token));
-				} catch (NumberFormatException e) {
-					// Optionally log or handle tokens that cannot be parsed
-				}
-			}
-		}).returns(Types.INT).keyBy(num -> 0).reduce(Integer::sum).map(Object::toString);
-
-		KafkaSink<String> sink = KafkaSink.<String>builder()
-				.setBootstrapServers("broker:9092")
-				.setRecordSerializer(KafkaRecordSerializationSchema.builder()
-						.setTopic("test-response")
-						.setValueSerializationSchema(new SimpleStringSchema())
-						.build()
-				)
-				.build();
-
-		sinker.sinkTo(sink);
 
 		env.execute("Simple Kafka Source");
 	}
