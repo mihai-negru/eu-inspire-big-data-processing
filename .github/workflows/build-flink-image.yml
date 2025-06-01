@@ -10,6 +10,7 @@ on:
       - inspire-models/pom.xml
       - inspire-models/src/main/**
       - Dockerfile
+      - .github/workflows/build-flink-image.yml
 
 env:
   REGISTRY: ghcr.io
