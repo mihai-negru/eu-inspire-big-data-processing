@@ -44,7 +44,9 @@ validator:
   base:
     url: ${VALIDATOR_BASE_URL:https://inspire.ec.europa.eu/validator}
   ets:
-    ids: ${VALIDATOR_ETS_IDS:EID545f9e49-009b-4114-9333-7ca26413b5d4}
+    ids:
+      geographicalnames: ${VALIDATOR_ETS_IDS_GEOGRAPHICAL_NAMES:EID545f9e49-009b-4114-9333-7ca26413b5d4}
+      administrativeunits: ${VALIDATOR_ETS_IDS_ADMINISTRATIVE_UNITS:EID545f9e49-009b-4114-9333-7ca26413b5d4}
   poll:
     delay: ${VALIDATOR_POLL_DELAY:15000}
 

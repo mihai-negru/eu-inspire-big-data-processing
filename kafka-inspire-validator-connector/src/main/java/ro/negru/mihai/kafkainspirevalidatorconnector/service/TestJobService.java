@@ -44,7 +44,7 @@ public class TestJobService {
         testJobRepository.findById(id).ifPresent(job -> {
             try {
                 final String testObjectId = callInspireValidatorService.uploadTestObject(req.getXml());
-                final String testRunId = callInspireValidatorService.createTestRun(testObjectId);
+                final String testRunId = callInspireValidatorService.createTestRun(req.getEtsFamily(), testObjectId);
 
                 job.setTestObjectId(testObjectId);
                 job.setTestRunId(testRunId);

@@ -52,11 +52,16 @@ spec:
                 secretKeyRef:
                   name: connector-secret
                   key: VALIDATOR_BASE_URL
-            - name: VALIDATOR_ETS_IDS
+            - name: VALIDATOR_ETS_IDS_ADMINISTRATIVE_UNITS
               valueFrom:
                 secretKeyRef:
                   name: connector-secret
-                  key: VALIDATOR_ETS_IDS
+                  key: VALIDATOR_ETS_IDS_ADMINISTRATIVE_UNITS
+            - name: VALIDATOR_ETS_IDS_GEOGRAPHICAL_NAMES
+              valueFrom:
+                secretKeyRef:
+                  name: connector-secret
+                  key: VALIDATOR_ETS_IDS_GEOGRAPHICAL_NAMES
             - name: VALIDATOR_POLL_DELAY
               valueFrom:
                 secretKeyRef:

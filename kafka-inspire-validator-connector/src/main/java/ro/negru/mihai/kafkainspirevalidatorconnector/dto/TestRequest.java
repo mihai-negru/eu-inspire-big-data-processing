@@ -1,8 +1,6 @@
 package ro.negru.mihai.kafkainspirevalidatorconnector.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,7 +14,9 @@ public class TestRequest {
     @NotBlank
     private String id;
 
-    @NotNull
-    @NotEmpty
+    @NotBlank
+    private String etsFamily;
+
+    @NotBlank
     private String xml;
 }

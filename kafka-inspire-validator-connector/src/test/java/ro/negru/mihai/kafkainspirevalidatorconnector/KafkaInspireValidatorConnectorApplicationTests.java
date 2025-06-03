@@ -126,7 +126,7 @@ class KafkaInspireValidatorConnectorApplicationTests {
         String xml = Files.readString(Path.of("src/test/resources/sample.xml"));
 
         String requestId = UUID.randomUUID().toString();
-        TestRequest req = new TestRequest(requestId, xml);
+        TestRequest req = new TestRequest(requestId, "geographicalnames", xml);
 
         System.err.println("Sending the message");
         kafkaTemplate.send("validator.input", requestId, req);

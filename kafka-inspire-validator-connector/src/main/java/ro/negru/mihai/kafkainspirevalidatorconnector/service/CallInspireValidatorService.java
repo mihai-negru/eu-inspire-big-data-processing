@@ -14,7 +14,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import ro.negru.mihai.kafkainspirevalidatorconnector.component.ValidatorEtsProperties;
-import ro.negru.mihai.kafkainspirevalidatorconnector.dto.TestResponse;
 import ro.negru.mihai.kafkainspirevalidatorconnector.status.ValidatorTestResponse;
 
 import java.nio.charset.StandardCharsets;
@@ -22,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.function.BiConsumer;
 
 @Service
 public class CallInspireValidatorService {
@@ -87,12 +85,17 @@ public class CallInspireValidatorService {
         return id;
     }
 
-    public String createTestRun(String testObjectId) {
+    public String createTestRun(String etsFamily, String testObjectId) {
         final Map<String, Object> payload = new HashMap<>();
         payload.put("label", String.valueOf(new Random().nextInt()));
 
-        final List<String> suiteIds = validatorEtsProperties.getIds();
-        if (suiteIds != null && !suiteIds.isEmpty()) {
+        final List<String> suiteIds = validatorEtsProperties.getIds().get(etsFamily);
+        if (suiteIds == null) {
+            LOGGER.error("The etsFamily \"{}\" is not one of \"{}\"", etsFamily, validatorEtsProperties.getIds().keySet().toString());
+            throw new IllegalArgumentException("The etsFamily " + etsFamily + "is invalid");
+        }
+
+        if (!suiteIds.isEmpty()) {
             payload.put("executableTestSuiteIds", suiteIds);
         }
 
