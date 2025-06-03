@@ -14,6 +14,8 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import ro.negru.mihai.kafkainspirevalidatorconnector.component.ValidatorEtsProperties;
+import ro.negru.mihai.kafkainspirevalidatorconnector.dto.TestResponse;
+import ro.negru.mihai.kafkainspirevalidatorconnector.status.ValidatorTestResponse;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -63,24 +65,26 @@ public class CallInspireValidatorService {
                 .build()
                 .toUriString();
 
-        LOGGER.info("Upload a TestObject at the following url: {}", uploadUrl);
+        LOGGER.info("Creating a TestObject to pass on for the testing which represents the file for the current payload");
 
         @SuppressWarnings("unchecked")
         Map<String, Object> response = restTemplate.exchange(uploadUrl, HttpMethod.POST, requestEntity, Map.class).getBody();
         if (response == null || !response.containsKey("testObject")) {
-            LOGGER.error("Failed to upload test object: {}", response != null ? response.toString() : null);
+            LOGGER.error("Could not upload the TestObject because it did not contain a valid testObject");
             throw new RuntimeException("Failed to upload TestObject; no 'testObject' in response");
         }
 
         @SuppressWarnings("unchecked")
         Map<String, Object> testObject = (Map<String, Object>) response.get("testObject");
         if (testObject == null || !testObject.containsKey("id")) {
-            LOGGER.error("Failed to upload test object: {}", testObject != null ? testObject.toString() : null);
+            LOGGER.error("Failed to upload the TestObject because it did not contain an id inside the testObject");
             throw new RuntimeException("Failed to upload TestObject; no 'id' in response");
         }
 
-        LOGGER.info("Successfully uploaded test object, and retrieved the id: {}", testObject.get("id").toString());
-        return testObject.get("id").toString();
+        final String id = testObject.get("id").toString();
+        LOGGER.info("Successfully uploaded on validator TestObject with id: \"{}\"", id);
+
+        return id;
     }
 
     public String createTestRun(String testObjectId) {
@@ -111,126 +115,77 @@ public class CallInspireValidatorService {
                 .build()
                 .toUriString();
 
-        LOGGER.info("Create a TestRun at the following url: {}", runsUrl);
+        LOGGER.info("Creating a TestRun with the TestObject \"{}\"", testObjectId);
 
         @SuppressWarnings("unchecked")
         final Map<String, Object> response = restTemplate.exchange(runsUrl, HttpMethod.POST, requestEntity, Map.class).getBody();
-        final Map<String, Object> testRun = getTestRunInfo(response);
+        final Map<String, Object> testRun = unwrapCreateTestRunResponseBody(response);
 
-        LOGGER.info("Successfully created a TestRun with id: {}", testRun.get("id").toString());
-        return testRun.get("id").toString();
+        final String testRunId = testRun.get("id").toString();
+        LOGGER.info("Successfully uploaded on validator a TestRun with id: \"{}\"", testRunId);
+
+        return testRunId;
     }
 
     @SuppressWarnings("unchecked")
-    public Map<String, String> getTestRunStatus(String testRunId) {
+    public ValidatorTestResponse getTestRunStatus(String testRunId) {
         final String statusUrl = UriComponentsBuilder
                 .fromUriString(validatorBaseUrl)
-                .pathSegment("v2", "TestRuns", testRunId)
+                .pathSegment("v2", "TestRuns", testRunId + ".json")
                 .build()
                 .toUriString();
 
-        LOGGER.info("Retrieve a TestRun status at the following url: {}", statusUrl);
+        LOGGER.info("Retrieving TestRun Status for TestRun with id: \"{}\"", testRunId);
 
         final Map<String, Object> response = restTemplate.getForObject(statusUrl, Map.class);
-        final Map<String, Object> testRun = getTestRunInfo(response);
+        final Map<String, Object> testRun = unwrapStatusTestRunResponseBody(response);
 
         final Map<String, Object> testTaskResults = (Map<String, Object>) testRun.get("testTaskResults");
         if (testTaskResults == null) {
-            LOGGER.info("Task with id {} has not finished yet", testRunId);
+            LOGGER.warn("TestRun with id \"{}\" returned an empty status, no following action needed", testRunId);
             return null;
         }
 
-        LOGGER.info("Task with id {} has finished", testRunId);
-        final Map<String, String> result = new HashMap<>();
-
-        Object maybeTasks = testTaskResults.get("TestTaskResult");
-        if (maybeTasks instanceof List) {
-            for (Object o : (List<Object>) maybeTasks) {
-                extractSingleTestTaskResult((Map<String,Object>) o, result);
-            }
-        } else if (maybeTasks instanceof Map) {
-            extractSingleTestTaskResult((Map<String,Object>) maybeTasks, result);
-        }
-
-        return result;
-    }
-
-    private Map<String, Object> getTestRunInfo(final Map<String, Object> response) {
-        LOGGER.info("Trying to retrive the testRunInfo");
-
-        if (response == null || !response.containsKey("EtfItemCollection")) {
-            LOGGER.error("Failed to upload TestRun; no 'EtfItemCollection' in response");
-            throw new RuntimeException("Failed to upload TestRun; no 'EtfItemCollection' in response");
-        }
-
-        @SuppressWarnings("unchecked")
-        final Map<String, Object> etfItemCollection = (Map<String, Object>) response.get("EtfItemCollection");
-        if (etfItemCollection == null || !etfItemCollection.containsKey("testRuns")) {
-            LOGGER.error("Failed to upload TestRun; no 'testRuns' in response");
-            throw new RuntimeException("Failed to upload TestRun; no 'testRuns' in response");
-        }
-
-        @SuppressWarnings("unchecked")
-        final Map<String,Object> testRuns = (Map<String,Object>) etfItemCollection.get("testRuns");
-        if (testRuns == null || !testRuns.containsKey("TestRun")) {
-            LOGGER.error("Failed to upload TestRun; no 'TestRun' in response");
-            throw new RuntimeException("Failed to upload TestRun; no 'TestRun' in response");
-        }
-
-        @SuppressWarnings("unchecked")
-        final Map<String, Object> testRun = (Map<String, Object>) testRuns.get("TestRun");
-        if (testRun == null || !testRun.containsKey("id")) {
-            LOGGER.error("Failed to upload TestRun; no 'id' in response");
-            throw new RuntimeException("Failed to upload TestRun; no 'id' in response");
-        }
-
-        LOGGER.info("Successfully retrived the testRunInfo");
-        return testRun;
+        LOGGER.info("TestRun with id \"{}\" has finished, computing the status response", testRunId);
+        return ValidatorTestResponse.fromBody(testTaskResults);
     }
 
     @SuppressWarnings("unchecked")
-    private void extractAndDfsResult(Map<String, Object> node, Map<String, String> result, String dfsKey, String dfsWrapper, BiConsumer<Map<String, Object>, Map<String, String>> dfsCall) {
-        if (node.containsKey("id") && node.containsKey("status")) {
-            String id = node.get("id").toString();
-            String status = node.get("status").toString();
-
-            LOGGER.info("Retrieving testRun with id {} and status {}", id, status);
-            result.put(id, status);
+    private Map<String, Object> unwrapCreateTestRunResponseBody(final Map<String, Object> response) {
+        if (response == null || !response.containsKey("EtfItemCollection")) {
+            throw new RuntimeException("Failed to unwrap TestRun; no \"EtfItemCollection\" in response");
         }
 
-        if (dfsKey != null && dfsWrapper != null) {
-            if (node.containsKey(dfsKey)) {
-                Map<String, Object> container = (Map<String, Object>) node.get(dfsKey);
-
-                Object wrapperContainer = container.get(dfsWrapper);
-                if (wrapperContainer instanceof List) {
-                    for (Object o : (List<Object>) wrapperContainer) {
-                        dfsCall.accept((Map<String, Object>) o, result);
-                    }
-                } else if (wrapperContainer instanceof Map) {
-                    dfsCall.accept((Map<String, Object>) wrapperContainer, result);
-                }
-            }
+        Map<String, Object> newBody = (Map<String, Object>) response.get("EtfItemCollection");
+        if (newBody == null || !newBody.containsKey("testRuns")) {
+            throw new RuntimeException("Failed to unwrap TestRun; no \"testRuns\" in response");
         }
+
+        newBody = (Map<String,Object>) newBody.get("testRuns");
+        if (newBody == null || !newBody.containsKey("TestRun")) {
+            throw new RuntimeException("Failed to unwrap TestRun; no \"TestRun\" in response");
+        }
+
+        newBody = (Map<String, Object>) newBody.get("TestRun");
+        if (newBody == null || !newBody.containsKey("id")) {
+            throw new RuntimeException("Failed to unwrap TestRun; no \"id\" in response");
+        }
+
+        return newBody;
     }
 
-    private void extractSingleTestTaskResult(Map<String,Object> node, Map<String,String> result) {
-        extractAndDfsResult(node, result, "testModuleResults", "TestModuleResult", this::extractSingleModuleResult);
-    }
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> unwrapStatusTestRunResponseBody(final Map<String, Object> response) {
+        if (response == null || !response.containsKey("EtfItemCollection")) {
+            throw new RuntimeException("Failed to unwrap TestRun; no \"EtfItemCollection\" in response");
+        }
 
-    private void extractSingleModuleResult(Map<String,Object> node, Map<String,String> result) {
-        extractAndDfsResult(node, result, "testCaseResults", "TestCaseResult", this::extractSingleCaseResult);
-    }
+        Map<String, Object> newBody = (Map<String, Object>) response.get("EtfItemCollection");
+        if (newBody == null || !newBody.containsKey("referencedItems")) {
+            throw new RuntimeException("Failed to unwrap TestRun; no \"referencedItems\" in response");
+        }
 
-    private void extractSingleCaseResult(Map<String,Object> node, Map<String,String> result) {
-        extractAndDfsResult(node, result, "testStepResults", "testStepResults", this::extractSingleStepResult);
-    }
-
-    private void extractSingleStepResult(Map<String,Object> node, Map<String,String> result) {
-        extractAndDfsResult(node, result, "testAssertionResults", "TestAssertionResult", this::extractSingleAssertionResult);
-    }
-
-    private void extractSingleAssertionResult(Map<String,Object> node, Map<String,String> result) {
-        extractAndDfsResult(node, result, null, null, null);
+        newBody = (Map<String,Object>) newBody.get("referencedItems");
+        return newBody;
     }
 }

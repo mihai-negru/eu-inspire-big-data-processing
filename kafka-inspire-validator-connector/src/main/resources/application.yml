@@ -44,7 +44,7 @@ validator:
   base:
     url: ${VALIDATOR_BASE_URL:https://inspire.ec.europa.eu/validator}
   ets:
-    ids: ${VALIDATOR_ETS_IDS}
+    ids: ${VALIDATOR_ETS_IDS:EID545f9e49-009b-4114-9333-7ca26413b5d4}
   poll:
     delay: ${VALIDATOR_POLL_DELAY:15000}
 
@@ -61,8 +61,8 @@ logging:
     ROOT: ${BRIDGE_LOG_ROOT_LEVEL:INFO}
 
   pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss,SSS} %-5level %-60logger{0} [%thread] - %msg%n"
-    file: "%d{yyyy-MM-dd HH:mm:ss,SSS} %-5level %-60logger{0} [%thread] - %msg%n"
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %-60logger{0} [%thread] - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %-60logger{0} [%thread] - %msg%n"
 
   file:
     name: "${BRIDGE_LOG_FILE:app.log}"

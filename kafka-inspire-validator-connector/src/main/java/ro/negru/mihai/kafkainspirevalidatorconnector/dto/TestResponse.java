@@ -2,14 +2,15 @@ package ro.negru.mihai.kafkainspirevalidatorconnector.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.Map;
+import ro.negru.mihai.kafkainspirevalidatorconnector.status.ValidatorTestResponse;
 
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class TestResponse {
-    private final String id;
-    private final Map<String, String> result;
+    private String id;
+    private ValidatorTestResponse status;
 }
