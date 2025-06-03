@@ -45,7 +45,8 @@ jobs:
       - name: Build and push image
         uses: docker/build-push-action@v5
         with:
-          context: ./flink-inspire-transformer
+          context: .
+          file: ./flink-inspire-transformer/Dockerfile
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.SERVICE }}:${{ env.TAG }}
           platforms: linux/arm64

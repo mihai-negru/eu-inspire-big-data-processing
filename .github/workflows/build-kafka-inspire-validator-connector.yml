@@ -1,4 +1,4 @@
-name: Build Flink Maven Jar
+name: Build Kafka Inspire Validator Connector
 
 on:
   push:
