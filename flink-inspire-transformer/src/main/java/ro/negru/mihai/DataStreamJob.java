@@ -22,11 +22,29 @@ import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.core.execution.CheckpointingMode;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ro.negru.mihai.schema.TopicAwareRecord;
 import ro.negru.mihai.xml.xmladapter.XmlUtils;
 
+import java.util.Map;
+
 public class DataStreamJob {
-	private static final String bootstrapServers = "kafka.kafka.svc.cluster.local:9092";
+	private static final Logger LOGGER = LoggerFactory.getLogger(DataStreamJob.class);
+	private static final String bootstrapServers;
+
+	static {
+		String envBootstrapServers = "localhost:9092";
+		try {
+			Map<String, String> envs = System.getenv();
+			if (envs != null && envs.containsKey("KAFKA_BOOTSTRAP_SERVERS"))
+				envBootstrapServers = envs.get("KAFKA_BOOTSTRAP_SERVERS");
+		} catch (Exception e) {
+			LOGGER.error("Failed to load environment variables to extract the bootstrap server", e);
+		}
+
+		bootstrapServers = envBootstrapServers;
+	}
 
 	public static void main(String[] args) throws Exception {
 		final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();

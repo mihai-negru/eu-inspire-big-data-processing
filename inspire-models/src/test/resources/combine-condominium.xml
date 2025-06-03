@@ -30,5 +30,3 @@
         </Condominium>
     </member>
 </FeatureCollection>
-
-        <?xml version="1.0" encoding="UTF-8"?><FeatureCollection><member><Condominium><inspireId><Identifier><localId>OK</localId><namespace>OK</namespace><versionId>OK</versionId></Identifier></inspireId><name><GeographicalName><spelling><SpellingOfName><text>Test</text><script>Test</script><transliterationScheme>Test</transliterationScheme></SpellingOfName></spelling><language>en</language><pronunciation><PronunciationOfName><pronunciationIPA>Test</pronunciationIPA><pronunciationSoundLink>https://www.test.com</pronunciationSoundLink></PronunciationOfName></pronunciation></GeographicalName></name></Condominium></member></FeatureCollection>
