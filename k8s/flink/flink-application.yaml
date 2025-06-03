@@ -4,7 +4,7 @@ metadata:
   name: flink-inspire
   namespace: flink
 spec:
-  image: matrix22/flink-inspire:latest
+  image: matrix22/flink-inspire:v1.0.9
   flinkVersion: v1_20
   flinkConfiguration:
     taskmanager.numberOfTaskSlots: "2"
@@ -13,10 +13,22 @@ spec:
     resource:
       memory: "2048m"
       cpu: 1
+    template:
+      spec:
+        containers:
+          env:
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: kafka.kafka.svc.cluster.local:9092
   taskManager:
     resource:
       memory: "2048m"
       cpu: 1
+    template:
+      spec:
+        containers:
+          env:
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: kafka.kafka.svc.cluster.local:9092
   job:
     jarURI: local:///opt/flink/usrlib/flink-inspire-transformer.jar
     parallelism: 2
