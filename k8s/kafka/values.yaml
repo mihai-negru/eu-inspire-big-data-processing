@@ -53,3 +53,9 @@ provisioning:
     - name: raw.FCSpellingOfName
       partitions: 1
       replicationFactor: 1
+    - name: validator.input
+      partitions: 1
+      replicationFactor: 1
+    - name: validator.output
+      partitions: 1
+      replicationFactor: 1

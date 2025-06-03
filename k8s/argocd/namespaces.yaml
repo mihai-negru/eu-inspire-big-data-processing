@@ -25,3 +25,10 @@ metadata:
   name: cassandra
   labels:
     name: cassandra
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: inspire-validator
+  labels:
+    name: inspire-validator

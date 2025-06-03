@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: validator
+  namespace: inspire-validator
+  labels:
+    app: validator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: validator
+  template:
+    metadata:
+      name: validator
+      labels:
+        app: validator
+    spec:
+      imagePullSecrets:
+        - name: ghcr-secret
+      containers:
+        - name: validator
+          image: ghcr.io/inspire-mif/helpdesk-validator/inspire-validator:2024.3
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          volumeMounts:
+            - name: etf-volume
+              mountPath: /etf
+      volumes:
+        - name: etf-volume
+          persistentVolumeClaim:
+            claimName: etf-pvc
