@@ -5,16 +5,14 @@ on:
     branches:
       - master
     paths:
-      - flink-inspire-transformer/pom.xml
-      - flink-inspire-transformer/src/main/**
-      - flink-inspire-transformer/Dockerfile
-      - inspire-models/pom.xml
-      - inspire-models/src/main/**
-      - .github/workflows/build-flink-image.yml
+      - kafka-inspire-validator-connector/pom.xml
+      - kafka-inspire-validator-connector/src/main/**
+      - kafka-inspire-validator-connector/Dockerfile
+      - .github/workflows/build-kafka-inspire-validator-connector.yml
 
 env:
   REGISTRY: ghcr.io
-  SERVICE: ${{ github.repository_owner }}/flink-inspire
+  SERVICE: ${{ github.repository_owner }}/kafka-inspire-validator-connector
   TAG: latest
 
 jobs:
@@ -45,7 +43,7 @@ jobs:
       - name: Build and push image
         uses: docker/build-push-action@v5
         with:
-          context: ./flink-inspire-transformer
+          context: ./kafka-inspire-validator-connector
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.SERVICE }}:${{ env.TAG }}
           platforms: linux/arm64
