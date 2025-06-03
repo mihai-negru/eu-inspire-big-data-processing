@@ -1,0 +1,81 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: kafka-inspire-validator-connector
+
+  datasource:
+    url: jdbc:h2:mem:inramdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=true
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.H2Dialect
+    properties:
+      hibernate:
+        dialect:
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: ${KAFKA_VALIDATOR_GROUP_ID:validator-bridge-group}
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: "*"
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+topics:
+  input: ${KAFKA_VALIDATOR_INPUT_TOPIC:validator.input}
+  output: ${KAFKA_VALIDATOR_OUTPUT_TOPIC:validator.output}
+
+validator:
+  base:
+    url: ${VALIDATOR_BASE_URL:https://inspire.ec.europa.eu/validator}
+  ets:
+    ids: ${VALIDATOR_ETS_IDS}
+  poll:
+    delay: ${VALIDATOR_POLL_DELAY:15000}
+
+job:
+  task:
+    executor:
+      core: ${EXECUTOR_CORE_POOL_SIZE:4}
+      max: ${EXECUTOR_MAX_POOL_SIZE:8}
+      queue: ${EXECUTOR_QUEUE_CAPACITY:50}
+      prefix: ${EXECUTOR_THREAD_NAME_PREFIX:InspireJob-}
+
+logging:
+  level:
+    ROOT: ${BRIDGE_LOG_ROOT_LEVEL:INFO}
+
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss,SSS} %-5level %-60logger{0} [%thread] - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss,SSS} %-5level %-60logger{0} [%thread] - %msg%n"
+
+  file:
+    name: "${BRIDGE_LOG_FILE:app.log}"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+  endpoint:
+    prometheus:
+      access: read_only
+  prometheus:
+    metrics:
+      export:
+        enabled: true
