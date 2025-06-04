@@ -1,6 +1,5 @@
 package ro.negru.mihai;
 
-import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.core.execution.CheckpointingMode;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;

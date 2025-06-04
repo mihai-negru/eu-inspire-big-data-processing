@@ -12,13 +12,17 @@ import ro.negru.mihai.base.featuretype.FeatureCollection;
 import ro.negru.mihai.entity.cassandra.TransformResult;
 import ro.negru.mihai.entity.kafka.TransformRequest;
 import ro.negru.mihai.entity.kafka.ValidatorTestRequest;
+import ro.negru.mihai.entity.validator.TestAssertion;
 import ro.negru.mihai.entity.validator.ValidatorTestResponse;
+import ro.negru.mihai.status.Status;
 import ro.negru.mihai.xml.xmladapter.XmlUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class DataStreamHandler {
@@ -74,6 +78,25 @@ public class DataStreamHandler {
         @Override
         public void flatMap(ValidatorTestResponse validatorTestResponse, Collector<TransformResult> collector) throws Exception {
             // FIXME: Impement this
+
+            Map<String, String> details = null;
+            final List<TestAssertion> assertions = validatorTestResponse.getStatus().getEtsAssertions();
+            int counter = 0;
+            for (TestAssertion assertion : assertions) {
+                final Status assertionStatus = Status.fromValue(assertion.getAssertionStatus());
+                final String assertionEtsFamily = assertion.getAssertionEts();
+
+                if (assertionStatus == Status.PASSED) {
+                    counter++;
+                } else {
+                    if (details == null)
+                        details = new HashMap<>();
+
+                    details.put(assertionEtsFamily, assertion.getAssertionEts());
+                }
+            }
+
+            collector.collect(new TransformResult(validatorTestResponse.getId(), null, (counter == assertions.size() ? Status.PASSED : Status.FAILED).str(), details));
         }
     }
 }

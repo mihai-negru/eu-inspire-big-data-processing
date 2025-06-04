@@ -1,7 +1,6 @@
 package ro.negru.mihai.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.connector.base.DeliveryGuarantee;
@@ -14,7 +13,6 @@ import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ro.negru.mihai.entity.kafka.ValidatorTestRequest;
 import ro.negru.mihai.oslevel.OSEnvHandler;
 import ro.negru.mihai.schema.deserializer.AbstractKafkaJsonDeserializerSchema;
 

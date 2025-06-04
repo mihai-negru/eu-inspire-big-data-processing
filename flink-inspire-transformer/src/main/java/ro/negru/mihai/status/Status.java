@@ -1,12 +1,11 @@
 package ro.negru.mihai.status;
 
-import ro.negru.mihai.application.schema.administrativeunits.codelist.LegalStatusValue;
-
 public enum Status {
     PENDING("PENDING"),
     PASSED("PASSED"),
     FAILED("FAILED"),
-    NOT_APPLICABLE("NOT_APPLICABLE");
+    NOT_APPLICABLE("NOT_APPLICABLE"),
+    UNKNOWN("UNKNOWN");
 
     private final String status;
 
@@ -18,7 +17,8 @@ public enum Status {
         for (Status c : Status.values())
             if (c.status.equals(v))
                 return c;
-        throw new IllegalArgumentException(v);
+
+        return Status.UNKNOWN;
     }
 
     public String str() {
