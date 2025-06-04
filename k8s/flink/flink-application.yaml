@@ -4,7 +4,7 @@ metadata:
   name: flink-inspire
   namespace: flink
 spec:
-  image: matrix22/flink-inspire:v1.0.9
+  image: matrix22/flink-inspire:v2.0.0
   flinkVersion: v1_20
   flinkConfiguration:
     taskmanager.numberOfTaskSlots: "2"
