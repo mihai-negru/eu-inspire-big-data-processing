@@ -19,6 +19,8 @@ spec:
           env:
             - name: KAFKA_BOOTSTRAP_SERVERS
               value: kafka.kafka.svc.cluster.local:9092
+            - name: CASSANDRA_SERVER
+              value: cassandra.cassandra.svc.cluster.local:9092
   taskManager:
     resource:
       memory: "2048m"
@@ -29,6 +31,8 @@ spec:
           env:
             - name: KAFKA_BOOTSTRAP_SERVERS
               value: kafka.kafka.svc.cluster.local:9092
+            - name: CASSANDRA_SERVER
+              value: cassandra.cassandra.svc.cluster.local:9092
   job:
     jarURI: local:///opt/flink/usrlib/flink-inspire-transformer.jar
     parallelism: 2
