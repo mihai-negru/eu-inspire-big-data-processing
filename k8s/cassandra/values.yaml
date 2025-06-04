@@ -25,3 +25,15 @@ image:
 
 cluster:
   seedCount: 3
+
+jvm:
+  maxHeapSize: 1G
+  newHeapSize: 800M
+
+resources:
+  limits:
+    cpu: 8
+    memory: 8Gi
+  requests:
+    cpu: 4
+    memory: 8Gi
