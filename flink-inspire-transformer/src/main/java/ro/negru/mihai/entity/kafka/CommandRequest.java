@@ -10,4 +10,5 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CommandRequest {
+    private String command;
 }
