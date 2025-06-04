@@ -15,6 +15,7 @@ import ro.negru.mihai.handler.KafkaHandler;
 import ro.negru.mihai.schema.deserializer.CommandRequestSchema;
 import ro.negru.mihai.schema.deserializer.TransformRequestSchema;
 import ro.negru.mihai.schema.deserializer.ValidatorTestResponseSchema;
+import ro.negru.mihai.xml.xmladapter.XmlUtils;
 
 public class DataStreamJob {
 	public static void main(String[] args) throws Exception {
@@ -28,7 +29,7 @@ public class DataStreamJob {
 		final DataStream<ValidatorTestResponse> kafkaValidatedStream = DataStreamHandler.<ValidatorTestResponse>createDataStream(env, KafkaHandler.<ValidatorTestResponse>createKafkaSource("validator.output", "flink-validator-output", new ValidatorTestResponseSchema()), "flink-kafka-validator-output");
 		final DataStream<CommandRequest> commandSignalStream = DataStreamHandler.<CommandRequest>createDataStream(env, KafkaHandler.<CommandRequest>createKafkaSource("command", "flink-command", new CommandRequestSchema()), "flink-kafka-command");
 
-		final DataStream<ValidatorTestRequest> transformedDataStream = rawDataStream.flatMap(new DataStreamHandler.InspireFlatMapTransform()).returns(ValidatorTestRequest.class);
+		final DataStream<ValidatorTestRequest> transformedDataStream = rawDataStream.flatMap(new DataStreamHandler.InspireFlatMapTransform(XmlUtils.getAvailableSchemas())).returns(ValidatorTestRequest.class);
 		KafkaHandler.<ValidatorTestRequest>sinker("validator.input", transformedDataStream);
 
 		final DataStream<TransformResult> cassandraPendingStream = transformedDataStream.map(new CassandraHandler.PendingCassandraMapFunction()).returns(TransformResult.class);

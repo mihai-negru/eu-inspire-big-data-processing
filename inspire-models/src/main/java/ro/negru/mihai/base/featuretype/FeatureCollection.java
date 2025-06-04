@@ -46,4 +46,8 @@ public class FeatureCollection<T> {
 
     @JacksonXmlProperty(isAttribute = true)
     private String lockId;
+
+    public String etsFamily() {
+        return "";
+    }
 }

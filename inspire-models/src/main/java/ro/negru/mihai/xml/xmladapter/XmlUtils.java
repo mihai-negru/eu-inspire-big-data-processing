@@ -147,7 +147,7 @@ public final class XmlUtils {
         return new InspireDefaultModule();
     }
 
-    public static List<String> getAvailableFeatures() {
+    public static List<String> getAvailableSchemas() {
         return FEATURES.stream().map(Class::getSimpleName).collect(Collectors.toList());
     }
 }

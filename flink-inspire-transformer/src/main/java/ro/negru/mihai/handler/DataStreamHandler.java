@@ -18,6 +18,7 @@ import ro.negru.mihai.xml.xmladapter.XmlUtils;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.util.List;
 import java.util.UUID;
 
 public class DataStreamHandler {
@@ -34,8 +35,19 @@ public class DataStreamHandler {
     }
 
     public static class InspireFlatMapTransform implements FlatMapFunction<TransformRequest, ValidatorTestRequest> {
+        private final List<String> availableSchemas;
+
+        public InspireFlatMapTransform(List<String> availableSchemas) {
+            this.availableSchemas = availableSchemas;
+        }
+
         @Override
         public void flatMap(TransformRequest record, Collector<ValidatorTestRequest> collector) throws Exception {
+            if (!availableSchemas.contains(record.getSchema())) {
+                LOGGER.error("Schema {} is not available", record.getSchema());
+                return;
+            }
+
             FeatureCollection<?> transformed = null;
             try (InputStream input = new ByteArrayInputStream(record.getMessage().getBytes())) {
                 transformed = xmlMapper.readFeature(input, record.getSchema());
