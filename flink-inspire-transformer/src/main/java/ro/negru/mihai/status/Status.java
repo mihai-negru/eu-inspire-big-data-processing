@@ -2,10 +2,15 @@ package ro.negru.mihai.status;
 
 public enum Status {
     PENDING("PENDING"),
+
     PASSED("PASSED"),
     FAILED("FAILED"),
+    SKIPPED("SKIPPED"),
     NOT_APPLICABLE("NOT_APPLICABLE"),
-    UNKNOWN("UNKNOWN");
+    INFO("INFO"),
+    WARNING("WARNING"),
+    UNDEFINED("UNDEFINED"),
+    PASSED_MANUAL("PASSED_MANUAL");
 
     private final String status;
 
@@ -18,7 +23,7 @@ public enum Status {
             if (c.status.equals(v))
                 return c;
 
-        return Status.UNKNOWN;
+        return Status.UNDEFINED;
     }
 
     public String str() {
