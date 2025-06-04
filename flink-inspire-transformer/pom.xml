@@ -36,6 +36,12 @@ under the License.
 		<maven.compiler.target>${target.java.version}</maven.compiler.target>
 		<log4j.version>2.17.1</log4j.version>
 		<jackson.version>2.18.2</jackson.version>
+		<inspire.models.version>1.0.0</inspire.models.version>
+		<flink.connector.base.version>1.20.1</flink.connector.base.version>
+		<kafka.connector.version>3.3.0-1.20</kafka.connector.version>
+		<cassandra.connector.version>3.0.0-1.16</cassandra.connector.version>
+		<cassandra.driver.version>4.18.1</cassandra.driver.version>
+		<lombok.version>1.18.34</lombok.version>
 	</properties>
 
 	<repositories>
@@ -81,8 +87,23 @@ under the License.
 		</dependency>
 		<dependency>
 			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-connector-base</artifactId>
+			<version>${flink.connector.base.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.flink</groupId>
 			<artifactId>flink-connector-kafka</artifactId>
-			<version>3.3.0-1.20</version>
+			<version>${kafka.connector.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-connector-cassandra_2.12</artifactId>
+			<version>${cassandra.connector.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cassandra</groupId>
+			<artifactId>java-driver-core</artifactId>
+			<version>${cassandra.driver.version}</version>
 		</dependency>
 
 		<!-- Add logging framework, to produce console output when running in the IDE. -->
@@ -108,7 +129,7 @@ under the License.
 		<dependency>
 			<groupId>ro.negru.mihai</groupId>
 			<artifactId>inspire-models</artifactId>
-			<version>1.0.0</version>
+			<version>${inspire.models.version}</version>
 		</dependency>
 
 		<dependency>
@@ -130,6 +151,12 @@ under the License.
 		<dependency>
 			<groupId>com.fasterxml.jackson.datatype</groupId>
 			<artifactId>jackson-datatype-jsr310</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>${lombok.version}</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 
