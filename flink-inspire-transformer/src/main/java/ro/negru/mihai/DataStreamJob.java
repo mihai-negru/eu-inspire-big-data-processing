@@ -34,17 +34,17 @@ public class DataStreamJob {
 		LOGGER.info("Successfully created Kafka Input Sources");
 
 		LOGGER.info("Creating the transformer routine and a sinker back to kafka for validation");
-		final DataStream<ValidatorTestRequest> transformedDataStream = rawDataStream.flatMap(new DataStreamHandler.InspireFlatMapTransform(XmlUtils.getAvailableSchemas())).returns(TypeInformation.of(ValidatorTestRequest.class));
+		final DataStream<ValidatorTestRequest> transformedDataStream = rawDataStream.flatMap(new DataStreamHandler.InspireFlatMapTransform(XmlUtils.getAvailableSchemas())).name("toINSPIRECompliant").returns(TypeInformation.of(ValidatorTestRequest.class));
 		KafkaHandler.<ValidatorTestRequest>sinker("validator.input", transformedDataStream);
 		LOGGER.info("Successfully created transformer routines");
 
 		LOGGER.info("Creating the Casandra sinker to insert newly non-validated responses");
-		final DataStream<TransformResult> cassandraPendingStream = transformedDataStream.map(new CassandraHandler.PendingCassandraMapFunction()).returns(TypeInformation.of(TransformResult.class));
+		final DataStream<TransformResult> cassandraPendingStream = transformedDataStream.map(new CassandraHandler.PendingCassandraMapFunction()).name("ToUnvalidatedCassandraDB").returns(TypeInformation.of(TransformResult.class));
 		CassandraHandler.sinker(cassandraPendingStream, true);
 		LOGGER.info("Successfully created Cassandra insert sinker");
 
 		LOGGER.info("Creating the Casandra sinker to update newly validated responses");
-		final DataStream<TransformResult> cassandraUpdateStatusStream = kafkaValidatedStream.flatMap(new DataStreamHandler.InspireFlatMapComputeStatus()).returns(TypeInformation.of(TransformResult.class));
+		final DataStream<TransformResult> cassandraUpdateStatusStream = kafkaValidatedStream.flatMap(new DataStreamHandler.InspireFlatMapComputeStatus()).name("ToValidatedCassandraDB").returns(TypeInformation.of(TransformResult.class));
 		CassandraHandler.sinker(cassandraUpdateStatusStream, false);
 		LOGGER.info("Successfully created Cassandra update sinker");
 

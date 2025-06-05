@@ -1,7 +1,7 @@
 package ro.negru.mihai.handler;
 
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
-import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.api.common.functions.RichFlatMapFunction;
 import org.apache.flink.connector.kafka.source.KafkaSource;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -38,7 +38,7 @@ public class DataStreamHandler {
         return env.fromSource(ingest, WatermarkStrategy.noWatermarks(), sourceName);
     }
 
-    public static class InspireFlatMapTransform implements FlatMapFunction<TransformRequest, ValidatorTestRequest> {
+    public static class InspireFlatMapTransform extends RichFlatMapFunction<TransformRequest, ValidatorTestRequest> {
         private final List<String> availableSchemas;
 
         public InspireFlatMapTransform(List<String> availableSchemas) {
@@ -77,7 +77,7 @@ public class DataStreamHandler {
         }
     }
 
-    public static class InspireFlatMapComputeStatus implements FlatMapFunction<ValidatorTestResponse, TransformResult> {
+    public static class InspireFlatMapComputeStatus extends RichFlatMapFunction<ValidatorTestResponse, TransformResult> {
         @Override
         public void flatMap(ValidatorTestResponse validatorTestResponse, Collector<TransformResult> collector){
             // FIXME: Impement this

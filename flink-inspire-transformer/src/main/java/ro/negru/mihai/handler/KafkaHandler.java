@@ -33,7 +33,7 @@ public class KafkaHandler {
                                 .setValueSerializationSchema(new SimpleStringSchema())
                                 .build()
                 )
-                .setDeliveryGuarantee(DeliveryGuarantee.AT_LEAST_ONCE)
+                .setDeliveryGuarantee(DeliveryGuarantee.EXACTLY_ONCE)
                 .setTransactionalIdPrefix(UUID.randomUUID().toString())
                 .build();
 

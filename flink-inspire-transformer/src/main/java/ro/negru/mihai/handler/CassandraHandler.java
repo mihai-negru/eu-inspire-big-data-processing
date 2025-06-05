@@ -3,6 +3,7 @@ package ro.negru.mihai.handler;
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.mapping.Mapper;
 import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.connectors.cassandra.CassandraSink;
 import org.apache.flink.streaming.connectors.cassandra.ClusterBuilder;
@@ -19,7 +20,7 @@ import java.nio.charset.StandardCharsets;
 public class CassandraHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(CassandraHandler.class);
 
-    public static class PendingCassandraMapFunction implements MapFunction<ValidatorTestRequest, TransformResult> {
+    public static class PendingCassandraMapFunction extends RichMapFunction<ValidatorTestRequest, TransformResult> {
 
         @Override
         public TransformResult map(ValidatorTestRequest req) {
