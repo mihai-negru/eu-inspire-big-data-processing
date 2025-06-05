@@ -7,32 +7,30 @@ spec:
   image: matrix22/flink-inspire:v2.0.0
   flinkVersion: v1_20
   flinkConfiguration:
-    taskmanager.numberOfTaskSlots: "2"
+    taskmanager.numberOfTaskSlots: "1"
   serviceAccount: flink
+  podTemplate:
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: pod-template
+    spec:
+      serviceAccount: flink
+      containers:
+        - name: flink-main-container
+          env:
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: kafka.kafka.svc.cluster.local:9092
+            - name: CASSANDRA_SERVER
+              value: cassandra.cassandra.svc.cluster.local:9092
   jobManager:
     resource:
       memory: "2048m"
       cpu: 1
-    template:
-      spec:
-        containers:
-          env:
-            - name: KAFKA_BOOTSTRAP_SERVERS
-              value: kafka.kafka.svc.cluster.local:9092
-            - name: CASSANDRA_SERVER
-              value: cassandra.cassandra.svc.cluster.local:9092
   taskManager:
     resource:
       memory: "2048m"
       cpu: 1
-    template:
-      spec:
-        containers:
-          env:
-            - name: KAFKA_BOOTSTRAP_SERVERS
-              value: kafka.kafka.svc.cluster.local:9092
-            - name: CASSANDRA_SERVER
-              value: cassandra.cassandra.svc.cluster.local:9092
   job:
     jarURI: local:///opt/flink/usrlib/flink-inspire-transformer.jar
     parallelism: 2

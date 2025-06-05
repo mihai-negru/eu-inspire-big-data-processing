@@ -2,26 +2,26 @@ replicaCount: 1
 
 initDBConfigMap: cassandra-init-cql
 
-livenessProbe:
-  enabled: true
-  initialDelaySeconds: 15
-  periodSeconds: 30
-  timeoutSeconds: 30
-  failureThreshold: 10
-
-readinessProbe:
-  enabled: true
-  initialDelaySeconds: 15
-  periodSeconds: 30
-  timeoutSeconds: 30
-  failureThreshold: 10
-
-startupProbe:
-  enabled: true
-  initialDelaySeconds: 15
-  periodSeconds: 30
-  timeoutSeconds: 30
-  failureThreshold: 10
+#livenessProbe:
+#  enabled: true
+#  initialDelaySeconds: 15
+#  periodSeconds: 30
+#  timeoutSeconds: 30
+#  failureThreshold: 10
+#
+#readinessProbe:
+#  enabled: true
+#  initialDelaySeconds: 15
+#  periodSeconds: 30
+#  timeoutSeconds: 30
+#  failureThreshold: 10
+#
+#startupProbe:
+#  enabled: true
+#  initialDelaySeconds: 15
+#  periodSeconds: 30
+#  timeoutSeconds: 30
+#  failureThreshold: 10
 
 image:
   debug: true
@@ -30,13 +30,13 @@ cluster:
   seedCount: 1
 
 jvm:
-  maxHeapSize: 2G
-  newHeapSize: 800M
+  maxHeapSize: 1G
+  newHeapSize: 200M
 
 resources:
   limits:
-    cpu: 8
-    memory: 8Gi
-  requests:
     cpu: 4
     memory: 8Gi
+  requests:
+    cpu: 2
+    memory: 4Gi
