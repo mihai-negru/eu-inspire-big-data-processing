@@ -11,5 +11,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class TransformRequest {
     private String schema;
+    private String schemaPath;
     private String message;
 }

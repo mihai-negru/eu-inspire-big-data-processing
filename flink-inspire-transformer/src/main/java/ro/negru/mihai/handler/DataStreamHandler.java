@@ -67,9 +67,10 @@ public class DataStreamHandler {
                 xmlMapper.writeValue(writer, transformed);
 
                 final String id = UUID.randomUUID().toString();
+                final String xmlSchemaPath = record.getSchemaPath();
                 final String etsFamily = transformed.etsFamily();
                 final String xml = writer.toString();
-                collector.collect(new ValidatorTestRequest(id, etsFamily, xml));
+                collector.collect(new ValidatorTestRequest(id, xmlSchemaPath, etsFamily, xml));
 
             } else {
                 LOGGER.error("The schema {} message {} could not be transformed, ue to unknown reasons", record.getSchema(), record.getMessage());
@@ -100,7 +101,7 @@ public class DataStreamHandler {
                 }
             }
 
-            collector.collect(new TransformResult(validatorTestResponse.getId(), null, (counter == assertions.size() ? Status.PASSED : Status.FAILED).str(), details));
+            collector.collect(new TransformResult(validatorTestResponse.getId(), null, null, (counter == assertions.size() ? Status.PASSED : Status.FAILED).str(), details));
         }
     }
 }

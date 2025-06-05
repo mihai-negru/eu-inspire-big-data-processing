@@ -26,6 +26,7 @@ public class CassandraHandler {
         public TransformResult map(ValidatorTestRequest req) {
             return new TransformResult(
                     req.getId(),
+                    req.getSchemaPath(),
                     ByteBuffer.wrap(req.getXml().getBytes(StandardCharsets.UTF_8)),
                     Status.PENDING.str(),
                     null

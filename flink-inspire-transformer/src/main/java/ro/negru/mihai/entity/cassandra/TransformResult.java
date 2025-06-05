@@ -19,6 +19,9 @@ public class TransformResult {
     @Column(name = "id")
     private String id;
 
+    @Column(name = "xml_path")
+    private String xmlPath;
+
     @Column(name = "xml")
     private ByteBuffer xml;
 
