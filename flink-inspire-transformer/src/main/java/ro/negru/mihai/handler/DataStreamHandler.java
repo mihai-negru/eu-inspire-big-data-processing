@@ -63,7 +63,7 @@ public class DataStreamHandler {
                 final StringWriter writer = new StringWriter();
                 xmlMapper.writeValue(writer, transformed);
 
-                final UUID id = UUID.randomUUID();
+                final String id = UUID.randomUUID().toString();
                 final String etsFamily = transformed.etsFamily();
                 final String xml = writer.toString();
                 collector.collect(new ValidatorTestRequest(id, etsFamily, xml));
@@ -76,7 +76,7 @@ public class DataStreamHandler {
 
     public static class InspireFlatMapComputeStatus implements FlatMapFunction<ValidatorTestResponse, TransformResult> {
         @Override
-        public void flatMap(ValidatorTestResponse validatorTestResponse, Collector<TransformResult> collector) throws Exception {
+        public void flatMap(ValidatorTestResponse validatorTestResponse, Collector<TransformResult> collector){
             // FIXME: Impement this
 
             Map<String, String> details = null;
@@ -96,7 +96,7 @@ public class DataStreamHandler {
                 }
             }
 
-            collector.collect(new TransformResult(validatorTestResponse.getId(), null, (counter == assertions.size() ? Status.PASSED : Status.FAILED).str(), details));
+            collector.collect(new TransformResult(UUID.fromString(validatorTestResponse.getId()), null, (counter == assertions.size() ? Status.PASSED : Status.FAILED).str(), details));
         }
     }
 }

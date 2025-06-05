@@ -43,9 +43,9 @@ public class KafkaHandler {
         stringStream.sinkTo(kafkaSink);
     }
 
-    public static void createTopicIfNotExist(final String bootstrapServer, final List<String> topicNames) {
+    public static void createTopicIfNotExist(final List<String> topicNames) {
         final Properties props = new Properties();
-        props.put("bootstrap.servers", bootstrapServer);
+        props.put("bootstrap.servers", OSEnvHandler.INSTANCE.getEnv("kafka"));
 
         try (AdminClient adminClient = AdminClient.create(props)) {
             List<NewTopic> topics = new ArrayList<>();
