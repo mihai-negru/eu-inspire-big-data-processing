@@ -10,5 +10,5 @@ import java.util.List;
 @Setter
 @ToString
 public class TestAssertionWrapper {
-    List<TestAssertion> etsAssertions;
+    private List<TestAssertion> etsAssertions;
 }

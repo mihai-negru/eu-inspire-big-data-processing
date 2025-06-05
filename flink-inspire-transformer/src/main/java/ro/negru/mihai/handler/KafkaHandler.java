@@ -9,23 +9,21 @@ import org.apache.flink.connector.kafka.sink.KafkaSink;
 import org.apache.flink.connector.kafka.source.KafkaSource;
 import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsInitializer;
 import org.apache.flink.streaming.api.datastream.DataStream;
-import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.NewTopic;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ro.negru.mihai.oslevel.OSEnvHandler;
 import ro.negru.mihai.schema.deserializer.AbstractKafkaJsonDeserializerSchema;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.concurrent.TimeUnit;
+import java.util.UUID;
 
 public class KafkaHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(KafkaHandler.class);
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     public static <OUT> void sinker(final String validatorInputTopic, final DataStream<OUT> stream) {
+        LOGGER.info("Creating a kafka source sinker for the following topic: {}", validatorInputTopic);
+
         final DataStream<String> stringStream = stream.map(MAPPER::writeValueAsString).returns(Types.STRING);
 
         final KafkaSink<String> kafkaSink = KafkaSink.<String>builder()
@@ -36,32 +34,18 @@ public class KafkaHandler {
                                 .setValueSerializationSchema(new SimpleStringSchema())
                                 .build()
                 )
-                .setDeliveryGuarantee(DeliveryGuarantee.EXACTLY_ONCE)
+                .setDeliveryGuarantee(DeliveryGuarantee.AT_LEAST_ONCE)
+                .setTransactionalIdPrefix(UUID.randomUUID().toString())
+//                .setProperty(ProducerConfig.CLIENT_ID_CONFIG, UUID.randomUUID().toString())
                 .build();
 
         stringStream.sinkTo(kafkaSink);
-    }
 
-    public static void createTopicIfNotExist(final List<String> topicNames) {
-        final Properties props = new Properties();
-        props.put("bootstrap.servers", OSEnvHandler.INSTANCE.getEnv("kafka"));
-
-        try (AdminClient adminClient = AdminClient.create(props)) {
-            List<NewTopic> topics = new ArrayList<>();
-            for (String topicName : topicNames) {
-                topics.add(new NewTopic(topicName, 1, (short) 1));
-                LOGGER.info("Creating topic {}", topicName);
-            }
-
-            adminClient.createTopics(topics).all().get(10, TimeUnit.MINUTES);
-            LOGGER.info("Successfully created topics");
-        } catch (Exception e) {
-            LOGGER.error("Failed to create topics");
-            LOGGER.error(e.getMessage(), e);
-        }
+        LOGGER.info("Kafka sinker created for the following topic: {}", validatorInputTopic);
     }
 
     public static <IN> KafkaSource<IN> createKafkaSource(final String topic, final String groupId, AbstractKafkaJsonDeserializerSchema<IN> deserializer) {
+        LOGGER.info("Creating a kafka source for the following topic: {} and group id {}", topic, groupId);
         return KafkaSource.<IN>builder()
                 .setBootstrapServers(OSEnvHandler.INSTANCE.getEnv("kafka"))
                 .setTopics(topic)

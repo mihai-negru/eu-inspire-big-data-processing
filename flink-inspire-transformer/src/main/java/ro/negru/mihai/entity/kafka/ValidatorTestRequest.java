@@ -11,8 +11,6 @@ import lombok.Setter;
 @Setter
 public class ValidatorTestRequest {
     private String id;
-
     private String etsFamily;
-
     private String xml;
 }

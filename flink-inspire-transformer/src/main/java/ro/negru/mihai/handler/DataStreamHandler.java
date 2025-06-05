@@ -47,19 +47,22 @@ public class DataStreamHandler {
 
         @Override
         public void flatMap(TransformRequest record, Collector<ValidatorTestRequest> collector) throws Exception {
+            LOGGER.info("Received a transform request for the following schema: {}", record.getSchema());
             if (!availableSchemas.contains(record.getSchema())) {
-                LOGGER.error("Schema {} is not available", record.getSchema());
+                LOGGER.error("Transform schema {} is not available", record.getSchema());
                 return;
             }
 
+            LOGGER.info("Trying to transform the message for the following schema: {}", record.getSchema());
             FeatureCollection<?> transformed = null;
             try (InputStream input = new ByteArrayInputStream(record.getMessage().getBytes())) {
                 transformed = xmlMapper.readFeature(input, record.getSchema());
             } catch (Exception e) {
-                LOGGER.error("InspireFlatMapTransform error", e);
+                LOGGER.error("Exception happened when transforming the schema message", e);
             }
 
             if (transformed != null) {
+                LOGGER.info("Successfully transformed the schema message: {}", record.getSchema());
                 final StringWriter writer = new StringWriter();
                 xmlMapper.writeValue(writer, transformed);
 
@@ -69,7 +72,7 @@ public class DataStreamHandler {
                 collector.collect(new ValidatorTestRequest(id, etsFamily, xml));
 
             } else {
-                LOGGER.error("No transformed inspire record, because something went wrong");
+                LOGGER.error("The schema {} message {} could not be transformed, ue to unknown reasons", record.getSchema(), record.getMessage());
             }
         }
     }
@@ -79,6 +82,7 @@ public class DataStreamHandler {
         public void flatMap(ValidatorTestResponse validatorTestResponse, Collector<TransformResult> collector){
             // FIXME: Impement this
 
+            LOGGER.info("Calculating the passed score");
             Map<String, String> details = null;
             final List<TestAssertion> assertions = validatorTestResponse.getStatus().getEtsAssertions();
             int counter = 0;

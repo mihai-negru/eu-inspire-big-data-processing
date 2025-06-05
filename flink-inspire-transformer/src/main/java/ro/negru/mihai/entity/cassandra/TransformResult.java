@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.nio.ByteBuffer;
 import java.util.Map;
 
 @Table(keyspace = "inspire", name = "transformed")
@@ -19,7 +20,7 @@ public class TransformResult {
     private String id;
 
     @Column(name = "xml")
-    private byte[] xml;
+    private ByteBuffer xml;
 
     @Column(name = "status")
     private String status;
