@@ -1,27 +1,9 @@
 replicaCount: 1
 
+dbUser:
+  existingSecret:
+    cassandra-secret
 initDBConfigMap: cassandra-init-cql
-
-#livenessProbe:
-#  enabled: true
-#  initialDelaySeconds: 15
-#  periodSeconds: 30
-#  timeoutSeconds: 30
-#  failureThreshold: 10
-#
-#readinessProbe:
-#  enabled: true
-#  initialDelaySeconds: 15
-#  periodSeconds: 30
-#  timeoutSeconds: 30
-#  failureThreshold: 10
-#
-#startupProbe:
-#  enabled: true
-#  initialDelaySeconds: 15
-#  periodSeconds: 30
-#  timeoutSeconds: 30
-#  failureThreshold: 10
 
 image:
   debug: true

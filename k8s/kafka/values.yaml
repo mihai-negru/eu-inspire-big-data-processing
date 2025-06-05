@@ -31,6 +31,7 @@ service:
     client: 30001
 
 provisioning:
+  enabled: true
   topics:
     - name: raw
       partitions: 1

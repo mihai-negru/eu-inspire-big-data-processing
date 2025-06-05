@@ -9,7 +9,6 @@ import org.apache.flink.connector.kafka.sink.KafkaSink;
 import org.apache.flink.connector.kafka.source.KafkaSource;
 import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsInitializer;
 import org.apache.flink.streaming.api.datastream.DataStream;
-import org.apache.kafka.clients.producer.ProducerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ro.negru.mihai.oslevel.OSEnvHandler;
@@ -36,7 +35,6 @@ public class KafkaHandler {
                 )
                 .setDeliveryGuarantee(DeliveryGuarantee.AT_LEAST_ONCE)
                 .setTransactionalIdPrefix(UUID.randomUUID().toString())
-//                .setProperty(ProducerConfig.CLIENT_ID_CONFIG, UUID.randomUUID().toString())
                 .build();
 
         stringStream.sinkTo(kafkaSink);
@@ -50,6 +48,7 @@ public class KafkaHandler {
                 .setBootstrapServers(OSEnvHandler.INSTANCE.getEnv("kafka"))
                 .setTopics(topic)
                 .setGroupId(groupId)
+                .setClientIdPrefix(UUID.randomUUID().toString())
                 .setStartingOffsets(OffsetsInitializer.earliest())
                 .setDeserializer(deserializer)
                 .setProperty("partition.discovery.interval.ms", "10000")

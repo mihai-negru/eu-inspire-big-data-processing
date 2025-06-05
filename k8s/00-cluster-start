@@ -8,3 +8,37 @@ minikube config set disk-size 100g
 
 minikube start --driver=qemu --network=socket_vmnet --cni=calico
 sudo minikube tunnel > /dev/null 2>&1 < /dev/null &
+
+kubectl apply -f config/namespaces.yaml --server-side
+
+for namespace in $(kubectl get namespaces -o jsonpath='{range .items[*]}{.metadata.name}{" "}'); do
+    kubectl create secret docker-registry ghcr-secret                                                   \
+        --namespace="$namespace"                                                                        \
+        --docker-server=ghcr.io                                                                         \
+        --docker-username="$GITHUB_REGISTRY_USERNAME" --docker-password="$GITHUB_REGISTRY_PASSWORD"     \
+        --docker-email="$GITHUB_REGISTRY_EMAIL"                                                         \
+        --dry-run=client -o yaml | kubectl apply -f -
+done
+
+# KAFKA
+helm install kafka bitnami/kafka --namespace kafka --values kafka/values.yaml
+
+# CASSANDRA
+kubectl create configmap cassandra-init-cql --namespace cassandra --from-file=cassandra/init.cql
+kubectl create secret generic cassandra-secret --namespace cassandra --from-env-file=cassandra/.env
+helm install cassandra bitnami/cassandra --namespace cassandra --values cassandra/values.yaml
+
+# FLINK OPERATOR
+helm install flink-kubernetes-operator flink-operator-repo/flink-kubernetes-operator --namespace flink --values flink/values.yaml
+
+# WAIT FOR KAFKA & CASSANDRA & FLINK OPERATOR
+kubectl rollout status statefulset/kafka-controller --namespace kafka
+kubectl rollout status statefulset/cassandra --namespace cassandra
+kubectl rollout status deployment/flink-kubernetes-operator -n flink
+
+# INSPIRE VALIDATOR
+kustomize build ./inspire-reference-validator | kubectl apply -f -
+
+# FLINK
+kubectl create secret generic flink-secret --namespace flink --from-env-file=flink/.env
+kubectl apply -f flink/flink-application.yaml
