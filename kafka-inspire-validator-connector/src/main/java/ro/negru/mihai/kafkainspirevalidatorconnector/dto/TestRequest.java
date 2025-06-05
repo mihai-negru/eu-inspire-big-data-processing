@@ -15,6 +15,9 @@ public class TestRequest {
     private String id;
 
     @NotBlank
+    private String schemaPath;
+
+    @NotBlank
     private String etsFamily;
 
     @NotBlank
