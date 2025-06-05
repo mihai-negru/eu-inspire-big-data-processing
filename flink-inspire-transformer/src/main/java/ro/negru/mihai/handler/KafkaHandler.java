@@ -9,6 +9,7 @@ import org.apache.flink.connector.kafka.sink.KafkaSink;
 import org.apache.flink.connector.kafka.source.KafkaSource;
 import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsInitializer;
 import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ro.negru.mihai.oslevel.OSEnvHandler;
@@ -34,6 +35,7 @@ public class KafkaHandler {
                                 .build()
                 )
                 .setDeliveryGuarantee(DeliveryGuarantee.EXACTLY_ONCE)
+                .setProperty(ProducerConfig.TRANSACTION_TIMEOUT_CONFIG, OSEnvHandler.INSTANCE.getEnv("kafka_tmt"))
                 .setTransactionalIdPrefix(UUID.randomUUID().toString())
                 .build();
 
