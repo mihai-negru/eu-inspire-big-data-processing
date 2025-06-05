@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Map;
-import java.util.UUID;
 
 @Table(keyspace = "inspire", name = "transformed")
 @Getter
@@ -17,7 +16,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class TransformResult {
     @Column(name = "id")
-    private UUID id;
+    private String id;
 
     @Column(name = "xml")
     private byte[] xml;

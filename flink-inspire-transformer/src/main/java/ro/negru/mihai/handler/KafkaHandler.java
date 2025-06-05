@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 public class KafkaHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(KafkaHandler.class);
@@ -60,10 +59,6 @@ public class KafkaHandler {
             LOGGER.error("Failed to create topics");
             LOGGER.error(e.getMessage(), e);
         }
-    }
-
-    public static List<String> createRawTopics(final List<String> topicNames) {
-        return topicNames.stream().map(topic -> "raw." + topic).collect(Collectors.toList());
     }
 
     public static <IN> KafkaSource<IN> createKafkaSource(final String topic, final String groupId, AbstractKafkaJsonDeserializerSchema<IN> deserializer) {

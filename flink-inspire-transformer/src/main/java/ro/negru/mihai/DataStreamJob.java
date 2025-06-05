@@ -20,11 +20,11 @@ import java.util.List;
 
 public class DataStreamJob {
 	public static void main(String[] args) throws Exception {
+		KafkaHandler.createTopicIfNotExist(List.of("raw", "validator.input", "validator.output", "command"));
+
 		final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 		env.enableCheckpointing(10000);
 		env.getCheckpointConfig().setCheckpointingConsistencyMode(CheckpointingMode.EXACTLY_ONCE);
-
-		KafkaHandler.createTopicIfNotExist(List.of("raw", "validator.input", "validator.output", "command"));
 
 		final DataStream<TransformRequest> rawDataStream = DataStreamHandler.<TransformRequest>createDataStream(env, KafkaHandler.<TransformRequest>createKafkaSource("raw", "flink-raw-data", new TransformRequestSchema()), "flink-kafka-raw-data");
 		final DataStream<ValidatorTestResponse> kafkaValidatedStream = DataStreamHandler.<ValidatorTestResponse>createDataStream(env, KafkaHandler.<ValidatorTestResponse>createKafkaSource("validator.output", "flink-validator-output", new ValidatorTestResponseSchema()), "flink-kafka-validator-output");

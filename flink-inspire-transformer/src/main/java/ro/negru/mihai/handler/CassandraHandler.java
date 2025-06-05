@@ -12,7 +12,6 @@ import ro.negru.mihai.oslevel.OSEnvHandler;
 import ro.negru.mihai.status.Status;
 
 import java.nio.charset.StandardCharsets;
-import java.util.UUID;
 
 public class CassandraHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(CassandraHandler.class);
@@ -21,7 +20,7 @@ public class CassandraHandler {
 
         @Override
         public TransformResult map(ValidatorTestRequest req) {
-            return new TransformResult(UUID.fromString(req.getId()), req.getXml().getBytes(StandardCharsets.UTF_8), Status.PENDING.str(), null);
+            return new TransformResult(req.getId(), req.getXml().getBytes(StandardCharsets.UTF_8), Status.PENDING.str(), null);
         }
     }
 

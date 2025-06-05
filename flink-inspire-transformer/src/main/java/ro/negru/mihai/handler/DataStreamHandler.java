@@ -96,7 +96,7 @@ public class DataStreamHandler {
                 }
             }
 
-            collector.collect(new TransformResult(UUID.fromString(validatorTestResponse.getId()), null, (counter == assertions.size() ? Status.PASSED : Status.FAILED).str(), details));
+            collector.collect(new TransformResult(validatorTestResponse.getId(), null, (counter == assertions.size() ? Status.PASSED : Status.FAILED).str(), details));
         }
     }
 }
