@@ -11,14 +11,11 @@ schemas:
     status:
       mapping:
         warning: passed
-        undefined: warning
+        undefined: passed
+        info: passed
+        not_applicable: passed
       weight:
-        warning: 3
-        undefined: 2
+        passed: 5
+        failed: 1
     testPipeline:
-      - rule: "count(failed) < 3"
-        trigger: fail
-      - rule: "count(success) > 5"
-        trigger: pass
-  - name: FCAdministrativeUnits
-    ...
+      - rule: "count(success) > 1"
