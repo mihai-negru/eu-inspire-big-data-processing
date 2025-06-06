@@ -2,7 +2,6 @@ package ro.negru.mihai.handler;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.mapping.Mapper;
-import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.connectors.cassandra.CassandraSink;
@@ -12,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import ro.negru.mihai.entity.cassandra.TransformResult;
 import ro.negru.mihai.entity.kafka.ValidatorTestRequest;
 import ro.negru.mihai.oslevel.OSEnvHandler;
-import ro.negru.mihai.status.Status;
+import ro.negru.mihai.configure.entity.status.Status;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;

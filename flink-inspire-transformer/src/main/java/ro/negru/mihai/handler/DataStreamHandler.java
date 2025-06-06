@@ -2,6 +2,7 @@ package ro.negru.mihai.handler;
 
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
+import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.connector.kafka.source.KafkaSource;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -14,7 +15,7 @@ import ro.negru.mihai.entity.kafka.TransformRequest;
 import ro.negru.mihai.entity.kafka.ValidatorTestRequest;
 import ro.negru.mihai.entity.validator.TestAssertion;
 import ro.negru.mihai.entity.validator.ValidatorTestResponse;
-import ro.negru.mihai.status.Status;
+import ro.negru.mihai.configure.entity.status.Status;
 import ro.negru.mihai.xml.xmladapter.XmlUtils;
 
 import java.io.ByteArrayInputStream;
@@ -78,11 +79,9 @@ public class DataStreamHandler {
         }
     }
 
-    public static class InspireFlatMapComputeStatus extends RichFlatMapFunction<ValidatorTestResponse, TransformResult> {
+    public static class InspireMapComputeStatus extends RichMapFunction<ValidatorTestResponse, TransformResult> {
         @Override
-        public void flatMap(ValidatorTestResponse validatorTestResponse, Collector<TransformResult> collector){
-            // FIXME: Impement this
-
+        public TransformResult map(ValidatorTestResponse validatorTestResponse) throws Exception {
             LOGGER.info("Calculating the passed score");
             Map<String, String> details = null;
             final List<TestAssertion> assertions = validatorTestResponse.getStatus().getEtsAssertions();
@@ -101,7 +100,7 @@ public class DataStreamHandler {
                 }
             }
 
-            collector.collect(new TransformResult(validatorTestResponse.getId(), null, null, (counter == assertions.size() ? Status.PASSED : Status.FAILED).str(), details));
+            return new TransformResult(validatorTestResponse.getId(), null, null, (counter == assertions.size() ? Status.PASSED : Status.FAILED).str(), details);
         }
     }
 }

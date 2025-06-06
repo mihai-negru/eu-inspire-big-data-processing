@@ -1,4 +1,7 @@
-package ro.negru.mihai.status;
+package ro.negru.mihai.configure.entity.status;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum Status {
     PENDING("PENDING"),
@@ -18,6 +21,7 @@ public enum Status {
         this.status = status;
     }
 
+    @JsonCreator
     public static Status fromValue(String v) {
         for (Status c : Status.values())
             if (c.status.equals(v))
@@ -26,6 +30,7 @@ public enum Status {
         return Status.UNDEFINED;
     }
 
+    @JsonValue
     public String str() {
         return status;
     }
