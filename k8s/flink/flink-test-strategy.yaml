@@ -1,0 +1,24 @@
+schemas:
+  - name: FCCondominium
+    hardTests:
+      - ets1
+      - ets2
+      - ets3
+    whitelist:
+      - ets1
+      - ets2
+      - ets3
+    status:
+      mapping:
+        warning: passed
+        undefined: warning
+      weight:
+        warning: 3
+        undefined: 2
+    testPipeline:
+      - rule: "count(failed) < 3"
+        trigger: fail
+      - rule: "count(success) > 5"
+        trigger: pass
+  - name: FCAdministrativeUnits
+    ...

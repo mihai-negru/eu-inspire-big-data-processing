@@ -44,4 +44,5 @@ kustomize build ./inspire-reference-validator | kubectl apply -f -
 
 # FLINK
 kubectl create secret generic flink-secret --namespace flink --from-env-file=flink/.env
+kubectl create configmap flink-test-strategy --namespace flink --from-file=flink/flink-test-strategy.yaml
 kubectl apply -f flink/flink-application.yaml

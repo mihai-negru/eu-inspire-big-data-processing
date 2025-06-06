@@ -51,12 +51,18 @@ provisioning:
     - name: raw
       partitions: 1
       replicationFactor: 1
-    - name: command
+    - name: command.input
+      partitions: 1
+      replicationFactor: 1
+    - name: command.output
       partitions: 1
       replicationFactor: 1
     - name: validator.input
       partitions: 1
       replicationFactor: 1
     - name: validator.output
+      partitions: 1
+      replicationFactor: 1
+    - name: transformer.log
       partitions: 1
       replicationFactor: 1

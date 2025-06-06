@@ -22,6 +22,14 @@ spec:
           envFrom:
             - secretRef:
                 name: flink-secret
+          volumeMounts:
+            - name: flink-test-strategy
+              mountPath: /opt/flink/conf/flink-test-strategy.yaml
+              subPath: flink-test-strategy.yaml
+      volumes:
+        - name: flink-test-strategy-volume
+          configMap:
+            name: flink-test-strategy
   jobManager:
     resource:
       memory: "2048m"
