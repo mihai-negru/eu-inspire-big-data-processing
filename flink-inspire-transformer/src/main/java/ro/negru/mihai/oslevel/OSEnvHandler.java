@@ -29,6 +29,7 @@ public enum OSEnvHandler {
             envs.put("cassandra", osEnvs.getOrDefault("CASSANDRA_SERVER", "localhost:9042"));
             envs.put("cassandra_user", osEnvs.getOrDefault("CASSANDRA_USER", "cassandra"));
             envs.put("cassandra_pass", osEnvs.getOrDefault("CASSANDRA_PASSWORD", "cassandra"));
+            envs.put("cassandra_dc", osEnvs.getOrDefault("CASSANDRA_DATABASE_CENTER", "dc1"));
 
             envs.put("fromTransformStream", osEnvs.getOrDefault("KAFKA_FROM_TRANSFORM_TOPIC", "raw"));
             envs.put("fromExecCommandStream", osEnvs.getOrDefault("KAFKA_FROM_EXEC_COMMAND_TOPIC", "command.input"));

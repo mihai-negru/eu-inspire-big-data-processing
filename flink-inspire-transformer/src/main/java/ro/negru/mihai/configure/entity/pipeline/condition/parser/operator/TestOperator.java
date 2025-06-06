@@ -2,6 +2,8 @@ package ro.negru.mihai.configure.entity.pipeline.condition.parser.operator;
 
 import lombok.Getter;
 
+import java.util.Comparator;
+
 @Getter
 public enum TestOperator {
     LT("<"),
@@ -23,5 +25,17 @@ public enum TestOperator {
             }
         }
         throw new IllegalArgumentException("Unsupported operator: " + text);
+    }
+
+    public <T extends Comparable<T>> boolean evaluate(T o1, T o2) {
+        int cmp = o1.compareTo(o2);
+
+        return switch (this) {
+            case LT -> (cmp < 0);
+            case LTE -> (cmp <= 0);
+            case EQ -> (cmp == 0);
+            case GTE -> (cmp >= 0);
+            case GT -> (cmp > 0);
+        };
     }
 }

@@ -7,10 +7,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ro.negru.mihai.entity.cassandra.TransformResult;
-import ro.negru.mihai.entity.kafka.CommandRequest;
-import ro.negru.mihai.entity.kafka.TransformRequest;
-import ro.negru.mihai.entity.kafka.TransformerLoggerResponse;
-import ro.negru.mihai.entity.kafka.ValidatorTestRequest;
+import ro.negru.mihai.entity.kafka.*;
 import ro.negru.mihai.entity.validator.ValidatorTestResponse;
 import ro.negru.mihai.handler.CassandraHandler;
 import ro.negru.mihai.handler.DataStreamHandler;
@@ -36,8 +33,10 @@ public class DataStreamJob {
 		LOGGER.info("Successfully created Kafka Input Sources");
 
 		LOGGER.info("Creating the transformer routine and a sinker back to kafka for validation");
-		final DataStream<ValidatorTestRequest> transformedDataStream = rawDataStream.flatMap(new DataStreamHandler.InspireFlatMapTransform(XmlUtils.getAvailableSchemas())).name("ToINSPIRECompliant").returns(TypeInformation.of(ValidatorTestRequest.class));
-		KafkaHandler.<ValidatorTestRequest>sinker(OSEnvHandler.INSTANCE.getEnv("toValidateStream"), transformedDataStream);
+		final DataStream<PostTransformRequest> transformedDataStream = rawDataStream.flatMap(new DataStreamHandler.InspireFlatMapTransform(XmlUtils.getAvailableSchemas())).name("ToINSPIRECompliant").returns(TypeInformation.of(PostTransformRequest.class));
+
+		final DataStream<ValidatorTestRequest> toValidateTransformedDataStream = transformedDataStream.map(new DataStreamHandler.ReferenceValidatorMapFunction()).name("ToINSPIREReferenceValidator").returns(TypeInformation.of(ValidatorTestRequest.class));
+		KafkaHandler.<ValidatorTestRequest>sinker(OSEnvHandler.INSTANCE.getEnv("toValidateStream"), toValidateTransformedDataStream);
 		LOGGER.info("Successfully created transformer routines");
 
 		LOGGER.info("Creating the Casandra sinker to insert newly non-validated responses");
@@ -46,7 +45,7 @@ public class DataStreamJob {
 		LOGGER.info("Successfully created Cassandra insert sinker");
 
 		LOGGER.info("Creating the Casandra sinker to update newly validated responses");
-		final DataStream<TransformResult> cassandraUpdateStatusStream = kafkaValidatedStream.map(new DataStreamHandler.InspireMapComputeStatus()).name("ToValidatedCassandraDB").returns(TypeInformation.of(TransformResult.class));
+		final DataStream<TransformResult> cassandraUpdateStatusStream = kafkaValidatedStream.flatMap(new DataStreamHandler.InspireFlatMapComputeStatus()).name("ToValidatedCassandraDB").returns(TypeInformation.of(TransformResult.class));
 		CassandraHandler.sinker(cassandraUpdateStatusStream, false);
 		LOGGER.info("Successfully created Cassandra update sinker");
 

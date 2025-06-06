@@ -5,8 +5,11 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ro.negru.mihai.configure.entity.schema.RootConfig;
+import ro.negru.mihai.configure.entity.schema.SchemaConfig;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 public enum TestStrategy {
     INSTANCE;
@@ -14,7 +17,7 @@ public enum TestStrategy {
     private static final Logger LOGGER = LoggerFactory.getLogger(TestStrategy.class);
     private static final String TEST_STRATEGY_FILE_PATH = "/opt/flink/conf/flink-test-strategy.yaml";
 
-    private RootConfig config;
+    private Map<String, SchemaConfig> config;
 
     static {
         TestStrategy.INSTANCE.init();
@@ -23,14 +26,21 @@ public enum TestStrategy {
     private void init() {
         final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 
+        RootConfig rootConfig = null;
         try {
-            config = mapper.readValue(new File(TEST_STRATEGY_FILE_PATH), RootConfig.class);
+            rootConfig = mapper.readValue(new File(TEST_STRATEGY_FILE_PATH), RootConfig.class);
         } catch (Exception e) {
             LOGGER.error("Could not read configuration file", e);
+            return;
+        }
+
+        config = new HashMap<>();
+        for (SchemaConfig schemaConfig : rootConfig.getSchemas()) {
+            config.put(schemaConfig.getName(), schemaConfig);
         }
     }
 
-    public RootConfig getConfig() {
-        return config;
+    public SchemaConfig getSchemaConfig(final String schema) {
+        return config.get(schema);
     }
 }

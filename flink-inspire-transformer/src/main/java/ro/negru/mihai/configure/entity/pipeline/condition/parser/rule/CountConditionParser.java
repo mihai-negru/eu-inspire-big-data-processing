@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 
 public class CountConditionParser implements ConditionParser {
     private static final Pattern COUNT_PATTERN = Pattern.compile(
-            "\\s*count\\(\\s*([a-zA-Z]+)\\s*\\)\\s*(<=|>=|<|>|=)\\s*(\\d+)\\s*",
+            "\\s*count\\(\\s*([a-zA-Z]+)\\s*\\)\\s*(<=|>=|<|>|=)\\s*([+-]?\\d+)\\s*",
             Pattern.CASE_INSENSITIVE
     );
 
@@ -21,7 +21,7 @@ public class CountConditionParser implements ConditionParser {
                 new CountCondition(
                         Status.fromValue(m.group(1).toLowerCase()),
                         TestOperator.fromValue(m.group(2)),
-                        Integer.parseInt(m.group(3))
+                        Long.parseLong(m.group(3))
                 )
                 :
                 null;

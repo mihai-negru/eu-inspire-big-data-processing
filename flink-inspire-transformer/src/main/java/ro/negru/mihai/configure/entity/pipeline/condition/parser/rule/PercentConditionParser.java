@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 
 public class PercentConditionParser implements ConditionParser {
     private static final Pattern PERCENT_PATTERN = Pattern.compile(
-            "\\s*percent\\(\\s*([a-zA-Z]+)\\s*\\)\\s*(<=|>=|<|>|=)\\s*(\\d+)%\\s*",
+            "\\s*percent\\(\\s*([a-zA-Z]+)\\s*\\)\\s*(<=|>=|<|>|=)\\s*([+-]?\\d+(?:\\.\\d*)?)\\s*",
             Pattern.CASE_INSENSITIVE
     );
 

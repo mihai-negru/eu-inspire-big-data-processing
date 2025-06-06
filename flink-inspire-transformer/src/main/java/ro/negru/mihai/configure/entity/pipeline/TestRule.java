@@ -15,7 +15,4 @@ public class TestRule {
     @JsonProperty("rule")
     @JsonDeserialize(using = TestConditionDeserializer.class)
     private TestCondition rule;
-
-    @JsonProperty("trigger")
-    private Trigger trigger;
 }

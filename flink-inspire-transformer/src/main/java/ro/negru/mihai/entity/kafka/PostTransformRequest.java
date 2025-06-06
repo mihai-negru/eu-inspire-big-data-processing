@@ -5,12 +5,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
-public class ValidatorTestRequest {
+@NoArgsConstructor
+@AllArgsConstructor
+public class PostTransformRequest {
     private String id;
-    private String etsFamily;
+    private String schema;
+    private String schemaPath;
     private String xml;
+    private String etsFamily;
 }

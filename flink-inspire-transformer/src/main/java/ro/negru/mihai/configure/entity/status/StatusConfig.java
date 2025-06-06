@@ -15,5 +15,5 @@ public class StatusConfig {
     private Map<Status, Status> mapping;
 
     @JsonProperty("weight")
-    private Map<String, Integer> weight;
+    private Map<Status, Integer> weight;
 }

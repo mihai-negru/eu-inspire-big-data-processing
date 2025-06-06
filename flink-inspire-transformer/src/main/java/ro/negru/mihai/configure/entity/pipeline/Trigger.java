@@ -1,7 +1,5 @@
 package ro.negru.mihai.configure.entity.pipeline;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.ToString;
 
 @ToString
@@ -9,7 +7,6 @@ public enum Trigger {
     PASS,
     FAIL;
 
-    @JsonCreator
     public static Trigger fromValue(String v) {
         if (v == null) {
             throw new IllegalArgumentException("Trigger cannot be null");
@@ -21,7 +18,10 @@ public enum Trigger {
         };
     }
 
-    @JsonValue
+    public static Trigger fromBoolean(boolean v) {
+        return v ? PASS : FAIL;
+    }
+
     public String toValue() {
         return name().toLowerCase();
     }

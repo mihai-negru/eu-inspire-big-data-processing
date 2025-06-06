@@ -24,7 +24,7 @@ public enum Status {
     @JsonCreator
     public static Status fromValue(String v) {
         for (Status c : Status.values())
-            if (c.status.equals(v))
+            if (c.status.equalsIgnoreCase(v))
                 return c;
 
         return Status.UNDEFINED;
@@ -33,5 +33,9 @@ public enum Status {
     @JsonValue
     public String str() {
         return status;
+    }
+
+    public static boolean isFailure(Status status) {
+        return status == Status.FAILED || status == Status.UNDEFINED;
     }
 }
