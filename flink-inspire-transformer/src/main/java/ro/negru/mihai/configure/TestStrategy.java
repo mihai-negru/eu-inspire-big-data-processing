@@ -26,7 +26,7 @@ public enum TestStrategy {
     private void init() {
         final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 
-        RootConfig rootConfig = null;
+        RootConfig rootConfig;
         try {
             rootConfig = mapper.readValue(new File(TEST_STRATEGY_FILE_PATH), RootConfig.class);
         } catch (Exception e) {
@@ -34,9 +34,15 @@ public enum TestStrategy {
             return;
         }
 
-        config = new HashMap<>();
-        for (SchemaConfig schemaConfig : rootConfig.getSchemas()) {
-            config.put(schemaConfig.getName(), schemaConfig);
+        if (rootConfig != null) {
+            LOGGER.info("Parsed the following root config: {}", rootConfig);
+
+            config = new HashMap<>();
+            for (SchemaConfig schemaConfig : rootConfig.getSchemas()) {
+                config.put(schemaConfig.getName(), schemaConfig);
+            }
+        } else {
+            LOGGER.error("Could not parse the configuration file");
         }
     }
 

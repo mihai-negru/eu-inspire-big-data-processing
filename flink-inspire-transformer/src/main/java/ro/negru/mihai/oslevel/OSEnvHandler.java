@@ -50,6 +50,7 @@ public enum OSEnvHandler {
             LOGGER.info("Cassandra server: '{}'", envs.get("cassandra"));
             LOGGER.info("Cassandra user: '{}'", envs.get("cassandra_user"));
             LOGGER.info("Cassandra password: '{}'", envs.get("cassandra_pass"));
+            LOGGER.info("Cassandra database center: '{}'", envs.get("cassandra_dc"));
 
             LOGGER.info("Kafka fromTransformStream: '{}'", envs.get("fromTransformStream"));
             LOGGER.info("Kafka fromExecCommandStream: '{}'", envs.get("fromExecCommandStream"));
