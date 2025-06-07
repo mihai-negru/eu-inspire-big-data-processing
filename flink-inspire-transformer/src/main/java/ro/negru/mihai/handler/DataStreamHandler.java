@@ -102,8 +102,8 @@ public class DataStreamHandler {
         private transient PreparedStatement lookupSchemaStatement;
         private transient SchemaConfig testSchemaConfig;
 
-        private final transient OSEnvHandler osEnvHandler;
-        private final transient TestStrategy testStrategy;
+        private final OSEnvHandler osEnvHandler;
+        private final TestStrategy testStrategy;
 
         public InspireFlatMapComputeStatus(final OSEnvHandler osEnvHandler, final TestStrategy testStrategy) {
             this.osEnvHandler = osEnvHandler;
