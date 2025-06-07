@@ -19,7 +19,7 @@ public class CountConditionParser implements ConditionParser {
         final Matcher m = COUNT_PATTERN.matcher(input);
         return m.matches() ?
                 new CountCondition(
-                        Status.fromValue(m.group(1).toLowerCase()),
+                        Status.fromValue(m.group(1)),
                         TestOperator.fromValue(m.group(2)),
                         Long.parseLong(m.group(3))
                 )

@@ -54,3 +54,5 @@ sleep 5
 kubectl rollout status deployment/connector -n inspire-validator
 kubectl rollout status deployment/validator -n inspire-validator
 kubectl rollout status deployment/flink-inspire -n flink
+
+kubectl port-forward svc/flink-inspire-rest 8081:8081 -n flink

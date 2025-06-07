@@ -19,7 +19,7 @@ public class PercentConditionParser implements ConditionParser {
         final Matcher m = PERCENT_PATTERN.matcher(input);
         return m.matches() ?
                 new PercentCondition(
-                        Status.fromValue(m.group(1).toLowerCase()),
+                        Status.fromValue(m.group(1)),
                         TestOperator.fromValue(m.group(2)),
                         Double.parseDouble(m.group(3))
                 )

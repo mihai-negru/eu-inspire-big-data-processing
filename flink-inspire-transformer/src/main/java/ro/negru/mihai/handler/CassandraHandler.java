@@ -40,7 +40,7 @@ public class CassandraHandler {
         }
     }
 
-    public static void sinker(final DataStream<TransformResult> stream, final boolean override) {
+    public static void sinker(final DataStream<TransformResult> stream, final OSEnvHandler osEnvHandler, final boolean override) {
         try {
             LOGGER.info("Trying to add a Cassandra sink from the flink application");
             CassandraSink.addSink(stream)
@@ -48,11 +48,11 @@ public class CassandraHandler {
                         @Override
                         protected Cluster buildCluster(Cluster.Builder builder) {
                             return builder
-                                    .addContactPoint(OSEnvHandler.INSTANCE.getEnv("cassandra"))
+                                    .addContactPoint(osEnvHandler.getEnv("cassandra"))
                                     .withPort(9042)
                                     .withCredentials(
-                                            OSEnvHandler.INSTANCE.getEnv("cassandra_user"),
-                                            OSEnvHandler.INSTANCE.getEnv("cassandra_pass")
+                                            osEnvHandler.getEnv("cassandra_user"),
+                                            osEnvHandler.getEnv("cassandra_pass")
                                     ).build();
                         }
                     })
@@ -64,15 +64,15 @@ public class CassandraHandler {
         }
     }
 
-    public static CqlSessionBuilder getSessionBuilder() {
+    public static CqlSessionBuilder getSessionBuilder(final OSEnvHandler osEnvHandler) {
         return CqlSession.builder()
-                .addContactPoint(new InetSocketAddress(OSEnvHandler.INSTANCE.getEnv("cassandra"), 9042))
+                .addContactPoint(new InetSocketAddress(osEnvHandler.getEnv("cassandra"), 9042))
                 .withAuthCredentials(
-                        OSEnvHandler.INSTANCE.getEnv("cassandra_user"),
-                        OSEnvHandler.INSTANCE.getEnv("cassandra_pass")
+                        osEnvHandler.getEnv("cassandra_user"),
+                        osEnvHandler.getEnv("cassandra_pass")
                 )
                 .withKeyspace("inspire")
-                .withLocalDatacenter(OSEnvHandler.INSTANCE.getEnv("cassandra_dc"));
+                .withLocalDatacenter(osEnvHandler.getEnv("cassandra_dc"));
     }
 
     public static PreparedStatement lookUpStatement(final CqlSession session) {

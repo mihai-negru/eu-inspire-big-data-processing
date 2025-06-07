@@ -31,13 +31,13 @@ public class KafkaHandler {
         }
     }
 
-    public static <OUT> void sinker(final String validatorInputTopic, final DataStream<OUT> stream) {
+    public static <OUT> void sinker(final String validatorInputTopic, final OSEnvHandler osEnvHandler, final DataStream<OUT> stream) {
         LOGGER.info("Creating a kafka source sinker for the following topic: {}", validatorInputTopic);
 
         final DataStream<String> stringStream = stream.map(MAPPER::writeValueAsString).returns(Types.STRING);
 
         final KafkaSink<String> kafkaSink = KafkaSink.<String>builder()
-                .setBootstrapServers(OSEnvHandler.INSTANCE.getEnv("kafka"))
+                .setBootstrapServers(osEnvHandler.getEnv("kafka"))
                 .setRecordSerializer(
                         KafkaRecordSerializationSchema.builder()
                                 .setTopic(validatorInputTopic)
@@ -45,7 +45,7 @@ public class KafkaHandler {
                                 .build()
                 )
                 .setDeliveryGuarantee(DeliveryGuarantee.EXACTLY_ONCE)
-                .setProperty(ProducerConfig.TRANSACTION_TIMEOUT_CONFIG, OSEnvHandler.INSTANCE.getEnv("kafka_tmt"))
+                .setProperty(ProducerConfig.TRANSACTION_TIMEOUT_CONFIG, osEnvHandler.getEnv("kafka_tmt"))
                 .setTransactionalIdPrefix(UUID.randomUUID().toString())
                 .build();
 
@@ -54,10 +54,10 @@ public class KafkaHandler {
         LOGGER.info("Kafka sinker created for the following topic: {}", validatorInputTopic);
     }
 
-    public static <IN> KafkaSource<IN> createKafkaSource(final String topic, final String groupId, AbstractKafkaJsonDeserializerSchema<IN> deserializer) {
+    public static <IN> KafkaSource<IN> createKafkaSource(final String topic, final String groupId, final OSEnvHandler osEnvHandler, AbstractKafkaJsonDeserializerSchema<IN> deserializer) {
         LOGGER.info("Creating a kafka source for the following topic: {} and group id {}", topic, groupId);
         return KafkaSource.<IN>builder()
-                .setBootstrapServers(OSEnvHandler.INSTANCE.getEnv("kafka"))
+                .setBootstrapServers(osEnvHandler.getEnv("kafka"))
                 .setTopics(topic)
                 .setGroupId(groupId)
                 .setClientIdPrefix(UUID.randomUUID().toString())

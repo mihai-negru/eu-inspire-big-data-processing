@@ -18,4 +18,4 @@ schemas:
         passed: 5
         failed: 1
     testPipeline:
-      - rule: "count(success) > 1"
+      - rule: "count(passed) > 1"

@@ -27,6 +27,7 @@ import ro.negru.mihai.entity.kafka.ValidatorTestRequest;
 import ro.negru.mihai.entity.validator.MappedTestAssertion;
 import ro.negru.mihai.entity.validator.TestAssertion;
 import ro.negru.mihai.entity.validator.ValidatorTestResponse;
+import ro.negru.mihai.oslevel.OSEnvHandler;
 import ro.negru.mihai.xml.xmladapter.XmlUtils;
 
 import java.io.ByteArrayInputStream;
@@ -101,11 +102,19 @@ public class DataStreamHandler {
         private transient PreparedStatement lookupSchemaStatement;
         private transient SchemaConfig testSchemaConfig;
 
+        private final transient OSEnvHandler osEnvHandler;
+        private final transient TestStrategy testStrategy;
+
+        public InspireFlatMapComputeStatus(final OSEnvHandler osEnvHandler, final TestStrategy testStrategy) {
+            this.osEnvHandler = osEnvHandler;
+            this.testStrategy = testStrategy;
+        }
+
         @Override
         public void open(OpenContext openContext) throws Exception {
             super.open(openContext);
 
-            session = CassandraHandler.getSessionBuilder().build();
+            session = CassandraHandler.getSessionBuilder(osEnvHandler).build();
             lookupSchemaStatement = CassandraHandler.lookUpStatement(session);
         }
 
@@ -128,7 +137,7 @@ public class DataStreamHandler {
             final TransformResult lookupElement = CassandraHandler.fromRow(lookupRow);
             LOGGER.info("Calculating status for Transform '{}' with schema '{}'", lookupElement.getId(), lookupElement.getXmlSchema());
 
-            testSchemaConfig = TestStrategy.INSTANCE.getSchemaConfig(lookupElement.getXmlSchema());
+            testSchemaConfig = testStrategy.getSchemaConfig(lookupElement.getXmlSchema());
             if (testSchemaConfig == null) {
                 LOGGER.warn("The schema id {} does not exist", id);
                 return;

@@ -19,8 +19,8 @@ public class RatioConditionParser implements ConditionParser {
         final Matcher m = RATIO_PATTERN.matcher(input);
         return m.matches() ?
                 new RatioCondition(
-                        Status.fromValue(m.group(1).toLowerCase()),
-                        Status.fromValue(m.group(2).toLowerCase()),
+                        Status.fromValue(m.group(1)),
+                        Status.fromValue(m.group(2)),
                         TestOperator.fromValue(m.group(3)),
                         Double.parseDouble(m.group(4))
                 )
