@@ -9,13 +9,18 @@ import ro.negru.mihai.configure.entity.pipeline.condition.parser.operator.TestOp
 import ro.negru.mihai.configure.entity.status.Status;
 import ro.negru.mihai.entity.validator.MappedTestAssertion;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.List;
 
 @AllArgsConstructor
 @Getter
 @Setter
 @ToString
-public class RatioCondition implements TestCondition {
+public class RatioCondition implements TestCondition, Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     private Status leftCategory;
     private Status rightCategory;
     private TestOperator operator;

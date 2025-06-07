@@ -20,7 +20,7 @@ public class TestStrategy implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TestStrategy.class);
-    private static final Path TEST_STRATEGY_FILE_PATH = Paths.get(File.separator, "opt", "flink", "usrlib", "flink-test-strategy.yaml");
+    private static final Path TEST_STRATEGY_FILE_PATH = Paths.get(/*File.separator, "opt", "flink", "usrlib", */"flink-test-strategy.yaml");
 
     private final Map<String, SchemaConfig> config;
 

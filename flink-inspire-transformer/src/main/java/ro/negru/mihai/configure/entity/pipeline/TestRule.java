@@ -6,12 +6,18 @@ import lombok.*;
 import ro.negru.mihai.configure.entity.pipeline.condition.deserializer.TestConditionDeserializer;
 import ro.negru.mihai.configure.entity.pipeline.condition.rule.TestCondition;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @ToString
-public class TestRule {
+public class TestRule implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     @JsonProperty("rule")
     @JsonDeserialize(using = TestConditionDeserializer.class)
     private TestCondition rule;

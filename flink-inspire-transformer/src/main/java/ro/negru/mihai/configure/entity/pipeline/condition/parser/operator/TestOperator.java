@@ -2,8 +2,6 @@ package ro.negru.mihai.configure.entity.pipeline.condition.parser.operator;
 
 import lombok.Getter;
 
-import java.util.Comparator;
-
 @Getter
 public enum TestOperator {
     LT("<"),

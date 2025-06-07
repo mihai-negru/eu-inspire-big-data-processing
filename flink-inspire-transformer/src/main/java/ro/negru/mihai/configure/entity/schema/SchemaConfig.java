@@ -5,6 +5,8 @@ import lombok.*;
 import ro.negru.mihai.configure.entity.pipeline.TestRule;
 import ro.negru.mihai.configure.entity.status.StatusConfig;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.List;
 
 @NoArgsConstructor
@@ -12,7 +14,10 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class SchemaConfig {
+public class SchemaConfig implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     @JsonProperty("name")
     private String name;
 
