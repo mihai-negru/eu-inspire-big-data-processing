@@ -54,4 +54,8 @@ public class TransformResult {
     public static String lookUpStatement() {
         return "SELECT * FROM transformed WHERE id=?";
     }
+
+    public static String lookUpGroupStatement() {
+        return "SELECT * FROM transformed WHERE group_id=?";
+    }
 }

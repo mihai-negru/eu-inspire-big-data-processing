@@ -15,9 +15,12 @@ import java.net.InetSocketAddress;
 public class CassandraUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(CassandraUtils.class);
 
-    public static <OUT> void sinker(final DataStream<OUT> stream, final OSEnvHandler osEnvHandler, final boolean override) {
+    @SafeVarargs
+    public static <OUT> void sinker(final OSEnvHandler osEnvHandler, final boolean override, final DataStream<OUT> firstStream, final DataStream<OUT> ...streams) {
         try {
             LOGGER.info("Trying to add a Cassandra sink from the flink application");
+
+            final DataStream<OUT> stream = streams != null && streams.length > 0 ? firstStream.union(streams) : firstStream;
             CassandraSink.addSink(stream)
                     .setClusterBuilder(new ClusterBuilder() {
                         @Override
