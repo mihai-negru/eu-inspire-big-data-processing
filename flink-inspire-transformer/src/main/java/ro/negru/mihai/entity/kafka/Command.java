@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum Command {
     MERGE("merge"),
+    GENERATE_GROUP("generate-group"),
     UNDEFINED("undefined");
 
     private final String value;

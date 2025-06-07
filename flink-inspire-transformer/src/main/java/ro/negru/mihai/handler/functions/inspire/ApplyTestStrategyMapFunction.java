@@ -44,8 +44,8 @@ public class ApplyTestStrategyMapFunction extends RichMapFunction<ValidatorTestR
     public void open(OpenContext openContext) throws Exception {
         super.open(openContext);
 
-        session = CassandraUtils.getSessionBuilder(osEnvHandler).build();
-        lookupSchemaStatement = CassandraUtils.lookUpStatement(session);
+        session = CassandraUtils.getSession(osEnvHandler);
+        lookupSchemaStatement = session.prepare(TransformResult.lookUpStatement());
     }
 
     @Override
@@ -65,7 +65,7 @@ public class ApplyTestStrategyMapFunction extends RichMapFunction<ValidatorTestR
             return new TransformResult(validatorTestResponse.getId(), null, null, null, null, Status.FAILED.str(), generateFailureDetails(originalAssertions));
         }
 
-        final TransformResult lookupElement = CassandraUtils.fromRow(lookupRow);
+        final TransformResult lookupElement = TransformResult.fromRow(lookupRow);
         LOGGER.info("Calculating status for Transform '{}' with schema '{}'", lookupElement.getId(), lookupElement.getXmlSchema());
 
         testSchemaConfig = testStrategy.getSchemaConfig(lookupElement.getXmlSchema());

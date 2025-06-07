@@ -21,10 +21,12 @@ public class KafkaUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(KafkaUtils.class);
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
-    public static <OUT> void sinker(final String validatorInputTopic, final OSEnvHandler osEnvHandler, final DataStream<OUT> stream) {
+    public static void sinker(final String validatorInputTopic, final OSEnvHandler osEnvHandler, final DataStream<?> ...streams) {
         LOGGER.info("Creating a kafka source sinker for the following topic: {}", validatorInputTopic);
 
-        final DataStream<String> stringStream = stream.map(MAPPER::writeValueAsString).returns(Types.STRING);
+        DataStream<String> fanOut = streams[0].map(MAPPER::writeValueAsString).returns(Types.STRING);
+        for (int i = 1; i < streams.length; ++i)
+            fanOut = fanOut.union(streams[i].map(MAPPER::writeValueAsString).returns(Types.STRING));
 
         final KafkaSink<String> kafkaSink = KafkaSink.<String>builder()
                 .setBootstrapServers(osEnvHandler.getEnv("kafka"))
@@ -39,7 +41,7 @@ public class KafkaUtils {
                 .setTransactionalIdPrefix(UUID.randomUUID().toString())
                 .build();
 
-        stringStream.sinkTo(kafkaSink);
+        fanOut.sinkTo(kafkaSink);
 
         LOGGER.info("Kafka sinker created for the following topic: {}", validatorInputTopic);
     }

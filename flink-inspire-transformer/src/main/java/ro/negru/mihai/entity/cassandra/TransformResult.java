@@ -10,6 +10,8 @@ import lombok.Setter;
 import java.nio.ByteBuffer;
 import java.util.Map;
 
+import com.datastax.oss.driver.api.core.cql.Row;
+
 @Table(keyspace = "inspire", name = "transformed")
 @Getter
 @Setter
@@ -36,4 +38,20 @@ public class TransformResult {
 
     @Column(name = "failure_details")
     private Map<String, String> failureDetails;
+
+    public static TransformResult fromRow(Row row) {
+        final String id = row.getString("id");
+        final String groupId = row.getString("group_id");
+        final String xmlSchema = row.getString("xml_schema");
+        final String xmlPath = row.getString("xml_path");
+        final ByteBuffer xmlBytes = row.getByteBuffer("xml");
+        final String status = row.getString("status");
+        final Map<String, String> failureDetails = row.getMap("failure_details", String.class, String.class);
+
+        return new TransformResult(id, groupId, xmlSchema, xmlPath, xmlBytes, status, failureDetails);
+    }
+
+    public static String lookUpStatement() {
+        return "SELECT * FROM transformed WHERE id=?";
+    }
 }

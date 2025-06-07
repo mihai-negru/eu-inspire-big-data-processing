@@ -7,6 +7,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ro.negru.mihai.configure.TestStrategy;
+import ro.negru.mihai.entity.cassandra.CommandResult;
 import ro.negru.mihai.entity.cassandra.TransformResult;
 import ro.negru.mihai.entity.kafka.*;
 import ro.negru.mihai.entity.validator.ValidatorTestResponse;
@@ -36,16 +37,16 @@ public class DataStreamJob {
 		final TestStrategy testStrategy = TestStrategy.readTestStrategy();
 
 		LOGGER.info("Creating Kafka Input Sources");
-		final DataStream<TransformRequest> rawDataStream = DataStreamUtils.<TransformRequest>createDataStream(env, KafkaUtils.<TransformRequest>createKafkaSource(osEnvHandler.getEnv("fromTransformStream"), "flink-raw-data", osEnvHandler, new TransformRequestSchema()), "flink-kafka-raw-data");
-		final DataStream<ValidatorTestResponse> kafkaValidatedStream = DataStreamUtils.<ValidatorTestResponse>createDataStream(env, KafkaUtils.<ValidatorTestResponse>createKafkaSource(osEnvHandler.getEnv("fromValidateStream"), "flink-validator-output", osEnvHandler, new ValidatorTestResponseSchema()), "flink-kafka-validator-output");
-		final DataStream<CommandRequest> commandSignalStream = DataStreamUtils.<CommandRequest>createDataStream(env, KafkaUtils.<CommandRequest>createKafkaSource(osEnvHandler.getEnv("fromExecCommandStream"), "flink-command-input", osEnvHandler, new CommandRequestSchema()), "flink-kafka-command-input");
+		final DataStream<TransformRequest> rawDataStream = DataStreamUtils.createDataStream(env, KafkaUtils.createKafkaSource(osEnvHandler.getEnv("fromTransformStream"), "flink-raw-data", osEnvHandler, new TransformRequestSchema()), "flink-kafka-raw-data");
+		final DataStream<ValidatorTestResponse> kafkaValidatedStream = DataStreamUtils.createDataStream(env, KafkaUtils.createKafkaSource(osEnvHandler.getEnv("fromValidateStream"), "flink-validator-output", osEnvHandler, new ValidatorTestResponseSchema()), "flink-kafka-validator-output");
+		final DataStream<CommandRequest> commandSignalStream = DataStreamUtils.createDataStream(env, KafkaUtils.createKafkaSource(osEnvHandler.getEnv("fromExecCommandStream"), "flink-command-input", osEnvHandler, new CommandRequestSchema()), "flink-kafka-command-input");
 		LOGGER.info("Successfully created Kafka Input Sources");
 
 		LOGGER.info("Creating the transformer routine and a sinker back to kafka for validation");
 		final DataStream<PostTransformRequest> transformedDataStream = rawDataStream.flatMap(new InspireFlatMapRawTransform(XmlUtils.getAvailableSchemas())).name("ToINSPIRECompliant").returns(TypeInformation.of(PostTransformRequest.class));
 
 		final DataStream<ValidatorTestRequest> toValidateTransformedDataStream = transformedDataStream.map(new ToReferenceValidatorMapFunction()).name("ToINSPIREReferenceValidator").returns(TypeInformation.of(ValidatorTestRequest.class));
-		KafkaUtils.<ValidatorTestRequest>sinker(osEnvHandler.getEnv("toValidateStream"), osEnvHandler, toValidateTransformedDataStream);
+		KafkaUtils.sinker(osEnvHandler.getEnv("toValidateStream"), osEnvHandler, toValidateTransformedDataStream);
 		LOGGER.info("Successfully created transformer routines");
 
 		LOGGER.info("Creating the Casandra sinker to insert newly non-validated responses");
@@ -58,12 +59,12 @@ public class DataStreamJob {
 		CassandraUtils.sinker(cassandraUpdateStatusStream, osEnvHandler, false);
 		LOGGER.info("Successfully created Cassandra update sinker");
 
-		final DataStream<TransformResult> execCommandStream = commandSignalStream.flatMap(new CommandMultiplexerExecutor()).returns(TypeInformation.of(TransformResult.class));
-		KafkaUtils.<TransformResult>sinker(osEnvHandler.getEnv("toExecCommandStream"), osEnvHandler, execCommandStream);
+		final DataStream<CommandResult> execCommandStream = commandSignalStream.flatMap(new CommandMultiplexerExecutor()).returns(TypeInformation.of(CommandResult.class));
+		KafkaUtils.sinker(osEnvHandler.getEnv("toExecCommandStream"), osEnvHandler, execCommandStream);
+		CassandraUtils.sinker(execCommandStream, osEnvHandler, true);
 
 		if (osEnvHandler.isTransformerLoggerEnabled()) {
-			KafkaUtils.<TransformResult>sinker(osEnvHandler.getEnv("toTransformerLogger"), osEnvHandler, cassandraUpdateStatusStream);
-			KafkaUtils.<TransformResult>sinker(osEnvHandler.getEnv("toTransformerLogger"), osEnvHandler, execCommandStream);
+			KafkaUtils.sinker(osEnvHandler.getEnv("toTransformerLogger"), osEnvHandler, cassandraUpdateStatusStream, execCommandStream);
 		}
 
 		env.execute("INSPIRE EU Directive Transform Pipeline Application Job");

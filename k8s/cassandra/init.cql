@@ -9,3 +9,9 @@ CREATE TABLE IF NOT EXISTS inspire.transformed (
     status          text,
     failure_details map<text,text>
 );
+
+CREATE TABLE IF NOT EXISTS inspire.executed (
+    id              text PRIMARY KEY,
+    command         text,
+    obj             blob
+);

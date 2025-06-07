@@ -2,26 +2,20 @@ package ro.negru.mihai.handler.utils;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.mapping.Mapper;
-import com.datastax.oss.driver.api.core.cql.Row;
 import com.datastax.oss.driver.api.core.CqlSession;
-import com.datastax.oss.driver.api.core.CqlSessionBuilder;
-import com.datastax.oss.driver.api.core.cql.PreparedStatement;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.connectors.cassandra.CassandraSink;
 import org.apache.flink.streaming.connectors.cassandra.ClusterBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ro.negru.mihai.entity.cassandra.TransformResult;
 import ro.negru.mihai.configure.OSEnvHandler;
 
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
-import java.util.Map;
 
 public class CassandraUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(CassandraUtils.class);
 
-    public static void sinker(final DataStream<TransformResult> stream, final OSEnvHandler osEnvHandler, final boolean override) {
+    public static <OUT> void sinker(final DataStream<OUT> stream, final OSEnvHandler osEnvHandler, final boolean override) {
         try {
             LOGGER.info("Trying to add a Cassandra sink from the flink application");
             CassandraSink.addSink(stream)
@@ -45,7 +39,7 @@ public class CassandraUtils {
         }
     }
 
-    public static CqlSessionBuilder getSessionBuilder(final OSEnvHandler osEnvHandler) {
+    public static CqlSession getSession(final OSEnvHandler osEnvHandler) {
         return CqlSession.builder()
                 .addContactPoint(new InetSocketAddress(osEnvHandler.getEnv("cassandra"), 9042))
                 .withAuthCredentials(
@@ -53,22 +47,7 @@ public class CassandraUtils {
                         osEnvHandler.getEnv("cassandra_pass")
                 )
                 .withKeyspace("inspire")
-                .withLocalDatacenter(osEnvHandler.getEnv("cassandra_dc"));
-    }
-
-    public static PreparedStatement lookUpStatement(final CqlSession session) {
-        return session.prepare("SELECT * FROM transformed WHERE id=?");
-    }
-
-    public static TransformResult fromRow(final Row row) {
-        final String id = row.getString("id");
-        final String groupId = row.getString("group_id");
-        final String xmlSchema = row.getString("xml_schema");
-        final String xmlPath = row.getString("xml_path");
-        final ByteBuffer xmlBytes = row.getByteBuffer("xml");
-        final String status = row.getString("status");
-        final Map<String, String> failureDetails = row.getMap("failure_details", String.class, String.class);
-
-        return new TransformResult(id, groupId, xmlSchema, xmlPath, xmlBytes, status, failureDetails);
+                .withLocalDatacenter(osEnvHandler.getEnv("cassandra_dc"))
+                .build();
     }
 }
