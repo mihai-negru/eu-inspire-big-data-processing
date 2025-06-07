@@ -4,15 +4,19 @@ import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class OSEnvHandler {
+public class OSEnvHandler implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
     private static final Logger LOGGER = LoggerFactory.getLogger(OSEnvHandler.class);
-    private final Map<String, String> envs;
 
     @Getter
     private boolean transformerLoggerEnabled;
+    private final Map<String, String> envs;
 
     private OSEnvHandler() {
         envs = new HashMap<>();

@@ -7,9 +7,7 @@ import org.slf4j.LoggerFactory;
 import ro.negru.mihai.configure.entity.schema.RootConfig;
 import ro.negru.mihai.configure.entity.schema.SchemaConfig;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
@@ -17,11 +15,14 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TestStrategy {
+public class TestStrategy implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(TestStrategy.class);
     private static final Path TEST_STRATEGY_FILE_PATH = Paths.get(File.separator, "opt", "flink", "usrlib", "flink-test-strategy.yaml");
 
-    private Map<String, SchemaConfig> config;
+    private final Map<String, SchemaConfig> config;
 
     private TestStrategy() {
         config = new HashMap<>();
