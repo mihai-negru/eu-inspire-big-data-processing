@@ -62,12 +62,13 @@ public class CassandraUtils {
 
     public static TransformResult fromRow(final Row row) {
         final String id = row.getString("id");
+        final String groupId = row.getString("group_id");
         final String xmlSchema = row.getString("xml_schema");
         final String xmlPath = row.getString("xml_path");
         final ByteBuffer xmlBytes = row.getByteBuffer("xml");
         final String status = row.getString("status");
         final Map<String, String> failureDetails = row.getMap("failure_details", String.class, String.class);
 
-        return new TransformResult(id, xmlSchema, xmlPath, xmlBytes, status, failureDetails);
+        return new TransformResult(id, groupId, xmlSchema, xmlPath, xmlBytes, status, failureDetails);
     }
 }
