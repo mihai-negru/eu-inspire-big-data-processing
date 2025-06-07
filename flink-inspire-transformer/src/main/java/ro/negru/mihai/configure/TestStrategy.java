@@ -15,7 +15,7 @@ public enum TestStrategy {
     INSTANCE;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TestStrategy.class);
-    private static final String TEST_STRATEGY_FILE_PATH = "/opt/flink/conf/flink-test-strategy.yaml";
+    private static final String TEST_STRATEGY_FILE_PATH = "/opt/flink/usrlib/flink-test-strategy.yaml";
 
     private Map<String, SchemaConfig> config;
 

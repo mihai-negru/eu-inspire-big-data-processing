@@ -4,7 +4,7 @@ metadata:
   name: flink-inspire
   namespace: flink
 spec:
-  image: matrix22/flink-inspire:v3.0.1
+  image: matrix22/flink-inspire:v3.0.3
   imagePullPolicy: Always
   flinkVersion: v1_20
   flinkConfiguration:
@@ -23,8 +23,8 @@ spec:
             - secretRef:
                 name: flink-secret
           volumeMounts:
-            - name: flink-test-strategy
-              mountPath: /opt/flink/conf/flink-test-strategy.yaml
+            - name: flink-test-strategy-volume
+              mountPath: /opt/flink/usrlib/flink-test-strategy.yaml
               subPath: flink-test-strategy.yaml
       volumes:
         - name: flink-test-strategy-volume
