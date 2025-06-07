@@ -31,7 +31,7 @@ helm install cassandra bitnami/cassandra --namespace cassandra --values cassandr
 # FLINK OPERATOR
 helm install flink-kubernetes-operator flink-operator-repo/flink-kubernetes-operator --namespace flink --values flink/values.yaml
 
-printf "Waiting for 10s"
+printf "Waiting for 10s\n"
 sleep 10
 
 # WAIT FOR KAFKA & CASSANDRA & FLINK OPERATOR

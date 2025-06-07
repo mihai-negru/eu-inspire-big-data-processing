@@ -11,6 +11,7 @@ image:
 cluster:
   seedCount: 1
   datacenter: eu-east-1
+  endpointSnitch: GossipingPropertyFileSnitch
 
 jvm:
   maxHeapSize: 1G
