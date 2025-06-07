@@ -31,8 +31,8 @@ helm install cassandra bitnami/cassandra --namespace cassandra --values cassandr
 # FLINK OPERATOR
 helm install flink-kubernetes-operator flink-operator-repo/flink-kubernetes-operator --namespace flink --values flink/values.yaml
 
-printf "Waiting for 10s\n"
-sleep 10
+printf "Waiting for 5s...\n"
+sleep 5
 
 # WAIT FOR KAFKA & CASSANDRA & FLINK OPERATOR
 kubectl rollout status statefulset/kafka-controller --namespace kafka
@@ -46,3 +46,11 @@ kustomize build ./inspire-reference-validator | kubectl apply -f -
 kubectl create secret generic flink-secret --namespace flink --from-env-file=flink/.env
 kubectl create configmap flink-test-strategy --namespace flink --from-file=flink/flink-test-strategy.yaml
 kubectl apply -f flink/flink-application.yaml
+
+printf "Waiting for 5s...\n"
+sleep 5
+
+# WAIT FOR VALIDATOR AND FLINK JOB
+kubectl rollout status deployment/connector -n inspire-validator
+kubectl rollout status deployment/validator -n inspire-validator
+kubectl rollout status deployment/flink-inspire -n flink

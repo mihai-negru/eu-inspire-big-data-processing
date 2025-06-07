@@ -16,11 +16,7 @@ public enum OSEnvHandler {
     @Getter
     private boolean transformerLoggerEnabled = false;
 
-    static {
-        OSEnvHandler.INSTANCE.init();
-    }
-
-    private void init() {
+    public void init() {
         try {
             Map<String, String> osEnvs = System.getenv();
 

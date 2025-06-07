@@ -6,6 +6,7 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ro.negru.mihai.configure.TestStrategy;
 import ro.negru.mihai.entity.cassandra.TransformResult;
 import ro.negru.mihai.entity.kafka.*;
 import ro.negru.mihai.entity.validator.ValidatorTestResponse;
@@ -22,6 +23,9 @@ public class DataStreamJob {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DataStreamJob.class);
 
 	public static void main(String[] args) throws Exception {
+		OSEnvHandler.INSTANCE.init();
+		TestStrategy.INSTANCE.init();
+
 		final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 		env.enableCheckpointing(10000);
 		env.getCheckpointConfig().setCheckpointingConsistencyMode(CheckpointingMode.EXACTLY_ONCE);

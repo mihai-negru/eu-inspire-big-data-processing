@@ -8,6 +8,12 @@ import ro.negru.mihai.configure.entity.schema.RootConfig;
 import ro.negru.mihai.configure.entity.schema.SchemaConfig;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,22 +21,24 @@ public enum TestStrategy {
     INSTANCE;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TestStrategy.class);
-    private static final String TEST_STRATEGY_FILE_PATH = "/opt/flink/usrlib/flink-test-strategy.yaml";
+    private static final Path TEST_STRATEGY_FILE_PATH = Paths.get(File.separator, "opt", "flink", "usrlib", "flink-test-strategy.yaml");
 
     private Map<String, SchemaConfig> config;
 
-    static {
-        TestStrategy.INSTANCE.init();
-    }
-
-    private void init() {
+    public void init() {
         final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 
         RootConfig rootConfig;
-        try {
-            rootConfig = mapper.readValue(new File(TEST_STRATEGY_FILE_PATH), RootConfig.class);
+        try (final InputStream in = Files.newInputStream(TEST_STRATEGY_FILE_PATH)) {
+            rootConfig = mapper.readValue(in, RootConfig.class);
+        } catch (NoSuchFileException e) {
+            LOGGER.error("Could not find test strategy file {}", TEST_STRATEGY_FILE_PATH);
+            return;
+        } catch (IOException e) {
+            LOGGER.error("Could not read test strategy file", e);
+            return;
         } catch (Exception e) {
-            LOGGER.error("Could not read configuration file", e);
+            LOGGER.error("Could not map the test strategy file", e);
             return;
         }
 
@@ -42,7 +50,7 @@ public enum TestStrategy {
                 config.put(schemaConfig.getName(), schemaConfig);
             }
         } else {
-            LOGGER.error("Could not parse the configuration file");
+            LOGGER.error("The test strategy file could not be parsed");
         }
     }
 
