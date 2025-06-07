@@ -1,4 +1,4 @@
-package ro.negru.mihai.schema.deserializer;
+package ro.negru.mihai.entity.schema.deserializer;
 
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.connector.kafka.source.reader.deserializer.KafkaRecordDeserializationSchema;

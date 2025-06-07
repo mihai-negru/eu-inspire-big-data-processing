@@ -1,4 +1,4 @@
-package ro.negru.mihai.oslevel;
+package ro.negru.mihai.configure;
 
 import lombok.Getter;
 import org.slf4j.Logger;

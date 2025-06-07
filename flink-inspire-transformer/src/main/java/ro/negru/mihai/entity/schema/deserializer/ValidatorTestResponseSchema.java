@@ -1,4 +1,4 @@
-package ro.negru.mihai.schema.deserializer;
+package ro.negru.mihai.entity.schema.deserializer;
 
 import ro.negru.mihai.entity.validator.ValidatorTestResponse;
 

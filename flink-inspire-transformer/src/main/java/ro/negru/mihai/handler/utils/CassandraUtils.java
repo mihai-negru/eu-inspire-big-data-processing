@@ -1,4 +1,4 @@
-package ro.negru.mihai.handler;
+package ro.negru.mihai.handler.utils;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.mapping.Mapper;
@@ -6,39 +6,20 @@ import com.datastax.oss.driver.api.core.cql.Row;
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.CqlSessionBuilder;
 import com.datastax.oss.driver.api.core.cql.PreparedStatement;
-import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.connectors.cassandra.CassandraSink;
 import org.apache.flink.streaming.connectors.cassandra.ClusterBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ro.negru.mihai.entity.cassandra.TransformResult;
-import ro.negru.mihai.entity.kafka.PostTransformRequest;
-import ro.negru.mihai.oslevel.OSEnvHandler;
-import ro.negru.mihai.configure.entity.status.Status;
+import ro.negru.mihai.configure.OSEnvHandler;
 
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-public class CassandraHandler {
-    private static final Logger LOGGER = LoggerFactory.getLogger(CassandraHandler.class);
-
-    public static class PendingCassandraMapFunction extends RichMapFunction<PostTransformRequest, TransformResult> {
-
-        @Override
-        public TransformResult map(PostTransformRequest req) {
-            return new TransformResult(
-                    req.getId(),
-                    req.getSchema(),
-                    req.getSchemaPath(),
-                    ByteBuffer.wrap(req.getXml().getBytes(StandardCharsets.UTF_8)),
-                    Status.PENDING.str(),
-                    null
-            );
-        }
-    }
+public class CassandraUtils {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CassandraUtils.class);
 
     public static void sinker(final DataStream<TransformResult> stream, final OSEnvHandler osEnvHandler, final boolean override) {
         try {

@@ -10,5 +10,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CommandRequest {
-    private String command;
+    private Command command;
+    private String groupId;
 }

@@ -10,6 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TransformRequest {
+    private String groupId;
     private String schema;
     private String schemaPath;
     private String message;

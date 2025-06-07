@@ -1,7 +1,6 @@
-package ro.negru.mihai.handler;
+package ro.negru.mihai.handler.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.connector.base.DeliveryGuarantee;
@@ -13,23 +12,14 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ro.negru.mihai.entity.cassandra.TransformResult;
-import ro.negru.mihai.entity.kafka.TransformerLoggerResponse;
-import ro.negru.mihai.oslevel.OSEnvHandler;
-import ro.negru.mihai.schema.deserializer.AbstractKafkaJsonDeserializerSchema;
+import ro.negru.mihai.configure.OSEnvHandler;
+import ro.negru.mihai.entity.schema.deserializer.AbstractKafkaJsonDeserializerSchema;
 
 import java.util.UUID;
 
-public class KafkaHandler {
-    private static final Logger LOGGER = LoggerFactory.getLogger(KafkaHandler.class);
+public class KafkaUtils {
+    private static final Logger LOGGER = LoggerFactory.getLogger(KafkaUtils.class);
     private static final ObjectMapper MAPPER = new ObjectMapper();
-
-    public static class TransformerLoggerMapFunction extends RichMapFunction<TransformResult, TransformerLoggerResponse> {
-        @Override
-        public TransformerLoggerResponse map(TransformResult result) {
-            return new TransformerLoggerResponse(result.getId(), result.getStatus(), result.getFailureDetails());
-        }
-    }
 
     public static <OUT> void sinker(final String validatorInputTopic, final OSEnvHandler osEnvHandler, final DataStream<OUT> stream) {
         LOGGER.info("Creating a kafka source sinker for the following topic: {}", validatorInputTopic);

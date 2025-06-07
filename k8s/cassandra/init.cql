@@ -2,6 +2,7 @@ CREATE KEYSPACE IF NOT EXISTS inspire WITH replication = { 'class': 'SimpleStrat
 
 CREATE TABLE IF NOT EXISTS inspire.transformed (
     id              text PRIMARY KEY,
+    group_id        text,
     xml_schema      text,
     xml_path        text,
     xml             blob,

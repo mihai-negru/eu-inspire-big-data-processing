@@ -19,6 +19,9 @@ public class TransformResult {
     @Column(name = "id")
     private String id;
 
+    @Column(name = "group_id")
+    private String groupId;
+
     @Column(name = "xml_schema")
     private String xmlSchema;
 

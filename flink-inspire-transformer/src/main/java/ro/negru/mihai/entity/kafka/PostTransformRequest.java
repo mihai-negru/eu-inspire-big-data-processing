@@ -11,6 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PostTransformRequest {
     private String id;
+    private String groupId;
     private String schema;
     private String schemaPath;
     private String xml;
