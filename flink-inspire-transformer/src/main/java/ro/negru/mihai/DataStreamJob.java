@@ -89,6 +89,7 @@ public class DataStreamJob {
 				.flatMap(new CommandMergeExecutor()).name("ExecuteMergeCommand").returns(TypeInformation.of(CommandResult.class));
 
 		CassandraUtils.sinker(osEnvHandler, true, commandGenerateGroupIdStreamResult, commandMergeStreamResult);
+		KafkaUtils.sinker(osEnvHandler.getEnv("toExecCommandStream"), osEnvHandler, commandGenerateGroupIdStreamResult, commandMergeStreamResult);
 
 		if (osEnvHandler.isTransformerLoggerEnabled()) {
 			KafkaUtils.sinker(osEnvHandler.getEnv("toTransformerLogger"), osEnvHandler, cassandraUpdateStatusStream, commandGenerateGroupIdStreamResult, commandMergeStreamResult);

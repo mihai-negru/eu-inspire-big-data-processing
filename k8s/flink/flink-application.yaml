@@ -4,7 +4,7 @@ metadata:
   name: flink-inspire
   namespace: flink
 spec:
-  image: matrix22/flink-inspire:v4.0.0
+  image: matrix22/flink-inspire:v4.0.1
   imagePullPolicy: Always
   flinkVersion: v1_20
   flinkConfiguration:
