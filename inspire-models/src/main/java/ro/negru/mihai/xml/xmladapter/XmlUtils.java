@@ -7,6 +7,10 @@ import com.fasterxml.jackson.dataformat.xml.XmlFactory;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.geotools.gml3.GML;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.LineString;
@@ -66,16 +70,16 @@ public final class XmlUtils {
             return super.readValue(buffSrc, valueType);
         }
 
-        public <T extends FeatureCollection<?>> T readFeature(InputStream src, Class<T> valueType) throws IOException {
+        public <T extends Feature> FeatureCollection<T> readFeature(InputStream src, Class<FeatureCollection<T>> valueType) throws IOException {
             return readValue(src, valueType);
         }
 
         @SuppressWarnings("unchecked")
-        public <T extends FeatureCollection<?>> T readFeature(InputStream src, String valueType) throws IOException {
-            Class<T> clazz = null;
+        public <T extends Feature> FeatureCollection<T> readFeature(InputStream src, String valueType) throws IOException {
+            Class<FeatureCollection<T>> clazz = null;
             for (Class<?> fClazz : FEATURES) {
                 if (fClazz.getSimpleName().equals(valueType)) {
-                    clazz = (Class<T>) fClazz;
+                    clazz = (Class<FeatureCollection<T>>) fClazz;
                     break;
                 }
             }
@@ -143,11 +147,50 @@ public final class XmlUtils {
         }
     }
 
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Getter
+    @Setter
+    public static class XmlPath {
+        private String path;
+        private long size;
+    }
+
     public static InspireDefaultModule getModuleWithDefaults() {
         return new InspireDefaultModule();
     }
 
     public static List<String> getAvailableSchemas() {
         return FEATURES.stream().map(Class::getSimpleName).collect(Collectors.toList());
+    }
+
+    public static XmlPath computeFeaturePath(final String reducedPath) {
+        if (reducedPath == null || reducedPath.isBlank()) return new XmlPath("", 0L);
+
+        final String[] parts = reducedPath.split("\\.");
+        final StringBuilder path = new StringBuilder();
+
+        long pathSize = 0;
+        path.append("holder");
+        for (int i = 0; i < parts.length - 1; ++i) {
+            if ("voidValue".equals(parts[i + 1]) || "voidReason".equals(parts[i + 1])) {
+                path.append('.').append(parts[i]);
+                --pathSize;
+            } else {
+                path.append('.').append(parts[i]).append(".holder");
+            }
+        }
+        path.append('.').append(parts[parts.length - 1]).append(".holder");
+        pathSize += parts.length;
+        return new XmlPath(path.toString(), pathSize);
+    }
+
+    public static <T extends Feature> T getFeatureFromCollection(final FeatureCollection<T> featureCollection) {
+        List<T> members = featureCollection.getMember();
+        if (members == null || members.isEmpty()) {
+            return null;
+        }
+
+        return members.get(0);
     }
 }

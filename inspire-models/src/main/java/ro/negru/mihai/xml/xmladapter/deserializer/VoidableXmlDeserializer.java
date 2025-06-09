@@ -43,6 +43,7 @@ public class VoidableXmlDeserializer<T> extends JsonDeserializer<Voidable<T>> im
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Voidable<T> deserialize(JsonParser p, DeserializationContext ctx) throws IOException {
         FromXmlParser xmlParser = (FromXmlParser) p;
 

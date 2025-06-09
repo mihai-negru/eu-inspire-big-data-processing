@@ -2,6 +2,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
+import ro.negru.mihai.application.schema.administrativeunits.featuretype.AdministrativeBoundary;
+import ro.negru.mihai.application.schema.administrativeunits.featuretype.Condominium;
+import ro.negru.mihai.application.schema.geographicalnames.datatype.GeographicalName;
+import ro.negru.mihai.base.featuretype.Feature;
 import ro.negru.mihai.base.featuretype.FeatureCollection;
 import ro.negru.mihai.base.featuretype.features.administrativeunits.FCAdministrativeBoundary;
 import ro.negru.mihai.base.featuretype.features.administrativeunits.FCCondominium;
@@ -27,13 +31,13 @@ public class JacksonUnitTests {
         xmlMapper = XmlUtils.getModuleWithDefaults().getXmlMapper();
     }
 
-    private <T extends FeatureCollection<?>> T generateValue(final String inputFile, Class<T> clazz) {
-        T finalValue = assertDoesNotThrow(() -> {
+    private <T extends Feature> FeatureCollection<T> generateValue(final String inputFile, String schema) {
+        FeatureCollection<T> finalValue = assertDoesNotThrow(() -> {
             InputStream is = getClass().getClassLoader().getResourceAsStream(inputFile);
             if (is == null)
                 throw new FileNotFoundException(inputFile);
 
-            T value = xmlMapper.readFeature(is, clazz);
+            FeatureCollection<T> value = xmlMapper.readFeature(is, schema);
             is.close();
 
             return value;
@@ -85,14 +89,14 @@ public class JacksonUnitTests {
 
     @Test
     public void condominium() {
-        FCCondominium v = generateValue("condominium-full.xml", FCCondominium.class);
+        FeatureCollection<Condominium> v = generateValue("condominium-full.xml", FCCondominium.class.getSimpleName());
         writeToOutputFile("target/condominium-full.xml", v, true);
     }
 
     @Test
     public void combineFeatures() {
-        FCGeographicalName geoName = generateValue("combine-geographical-name.xml", FCGeographicalName.class);
-        FCCondominium cond = generateValue("combine-condominium.xml", FCCondominium.class);
+        FeatureCollection<GeographicalName> geoName = generateValue("combine-geographical-name.xml", FCGeographicalName.class.getSimpleName());
+        FeatureCollection<Condominium> cond = generateValue("combine-condominium.xml", FCCondominium.class.getSimpleName());
 
         cond.getMember().get(0).getHolder().getName().add(
                 Voidable.ofValue(geoName.getMember().get(0))
@@ -103,7 +107,7 @@ public class JacksonUnitTests {
 
     @Test
     public void testExternFeature() {
-        FCAdministrativeBoundary boundary = generateValue("extern-feature.xml", FCAdministrativeBoundary.class);
+        FeatureCollection<AdministrativeBoundary> boundary = generateValue("extern-feature.xml", FCAdministrativeBoundary.class.getSimpleName());
         writeToOutputFile("target/extern-feature.xml", boundary, false);
     }
 }

@@ -1,25 +1,16 @@
 package ro.negru.mihai.xml.xmladapter.serializer;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
-import org.codehaus.stax2.XMLStreamWriter2;
-import org.geotools.gml3.GML;
 import org.geotools.gml3.GMLConfiguration;
 import org.geotools.xsd.Encoder;
-import org.locationtech.jts.geom.Geometry;
-import ro.negru.mihai.xml.namespace.InspireNamespaces;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.regex.Pattern;
 
 public class GMLGeoToolsXmlSerializer<T> extends StdSerializer<T> {
     private final QName qname;

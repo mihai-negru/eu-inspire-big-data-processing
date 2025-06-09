@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonLocation;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.dataformat.xml.deser.FromXmlParser;
@@ -12,7 +11,6 @@ import org.geotools.gml3.GMLConfiguration;
 import org.geotools.xsd.Parser;
 import ro.negru.mihai.xml.namespace.InspireNamespaces;
 
-import javax.xml.namespace.QName;
 import javax.xml.stream.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;

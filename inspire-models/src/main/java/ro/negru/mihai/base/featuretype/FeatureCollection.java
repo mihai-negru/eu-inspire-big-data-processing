@@ -4,12 +4,9 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import jakarta.validation.constraints.Size;
-import jakarta.xml.bind.annotation.XmlRootElement;
 import lombok.Getter;
 import lombok.Setter;
 import org.locationtech.jts.geom.Envelope;
-import ro.negru.mihai.application.schema.administrativeunits.featuretype.Condominium;
-import ro.negru.mihai.application.schema.geographicalnames.datatype.SpellingOfName;
 import ro.negru.mihai.xml.namespace.InspireNamespaces;
 
 import java.util.List;
@@ -17,7 +14,7 @@ import java.util.List;
 @JacksonXmlRootElement(localName = "FeatureCollection", namespace = InspireNamespaces.WFS)
 @Getter
 @Setter
-public class FeatureCollection<T> {
+public class FeatureCollection<T extends Feature> {
     @JacksonXmlProperty(namespace = InspireNamespaces.WFS)
     @JacksonXmlElementWrapper(useWrapping = false)
     private List<Envelope> boundedBy;

@@ -2,7 +2,6 @@ package ro.negru.mihai.xml.xmladapter.serializer;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.ContextualSerializer;
 import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
 import ro.negru.mihai.base.stereotype.Voidable;
@@ -36,13 +35,13 @@ public class VoidableXmlSerializer<T> extends JsonSerializer<Voidable<T>> implem
             xmlGen.writeBooleanField("nil", true);
             xmlGen.setNextName(new QName(InspireNamespaces.XSI, "nilReason", InspireNamespaces.XSI_PREFIX));
             xmlGen.setNextIsAttribute(true);
-            xmlGen.writeStringField("nilReason", value != null ? value.getReason().value() : "unknown");
+            xmlGen.writeStringField("nilReason", value != null ? value.getVoidReason().value() : "unknown");
             xmlGen.writeEndObject();
         } else {
             if (innerTypeSerializer != null)
-                innerTypeSerializer.serialize(value.getValue(), gen, serializers);
+                innerTypeSerializer.serialize(value.getVoidValue(), gen, serializers);
             else if (innerSerializer != null)
-                innerSerializer.serialize(value.getValue(), gen, serializers);
+                innerSerializer.serialize(value.getVoidValue(), gen, serializers);
         }
     }
 

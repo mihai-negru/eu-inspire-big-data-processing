@@ -1,8 +1,6 @@
 package ro.negru.mihai.xml.namespace;
 
-import javax.xml.namespace.QName;
 import java.util.Map;
-import java.util.function.Function;
 
 public final class InspireNamespaces {
     private InspireNamespaces() {}

@@ -1,26 +1,30 @@
 package ro.negru.mihai.base.stereotype;
 
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import ro.negru.mihai.base.types.codelist.VoidReasonValue;
 
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Voidable<T> {
 
     @Valid
-    private T value;
-    private VoidReasonValue reason;
+    private T voidValue;
+    private VoidReasonValue voidReason;
 
     private Voidable(VoidReasonValue reason) {
-        this.reason = reason;
+        this.voidReason = reason;
     }
 
     private Voidable(T value) {
-        this.value = value;
+        this.voidValue = value;
     }
 
     public boolean isVoid() {
-        return value == null && reason != null;
+        return voidValue == null && voidReason != null;
     }
 
     public static<M> Voidable<M> ofVoid(String reason) {

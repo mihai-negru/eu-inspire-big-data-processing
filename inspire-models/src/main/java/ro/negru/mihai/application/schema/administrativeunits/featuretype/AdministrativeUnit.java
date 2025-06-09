@@ -1,6 +1,5 @@
 package ro.negru.mihai.application.schema.administrativeunits.featuretype;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
@@ -110,7 +109,7 @@ public class AdministrativeUnit implements Feature {
     private boolean validateHighestLevelUnit() {
         if (!AdministrativeHierarchyLevel.Enum.FIRST_ORDER.equals(holder.nationalLevel.getCode())) return true;
 
-        boolean hasNoUpper = holder.upperLevelUnit == null || holder.upperLevelUnit.isVoid() || holder.upperLevelUnit.getValue() == null;
+        boolean hasNoUpper = holder.upperLevelUnit == null || holder.upperLevelUnit.isVoid() || holder.upperLevelUnit.getVoidValue() == null;
         boolean hasLower = holder.lowerLevelUnit != null && !holder.lowerLevelUnit.isEmpty();
 
         return hasNoUpper && hasLower;
@@ -119,7 +118,7 @@ public class AdministrativeUnit implements Feature {
     private boolean validateLowestLevelUnit() {
         if (!AdministrativeHierarchyLevel.Enum.SIXTH_ORDER.equals(holder.nationalLevel.getCode())) return true;
 
-        boolean hasNoUpper = holder.upperLevelUnit == null || holder.upperLevelUnit.isVoid() || holder.upperLevelUnit.getValue() == null;
+        boolean hasNoUpper = holder.upperLevelUnit == null || holder.upperLevelUnit.isVoid() || holder.upperLevelUnit.getVoidValue() == null;
         boolean hasLower = holder.lowerLevelUnit != null && !holder.lowerLevelUnit.isEmpty();
 
         return hasNoUpper && hasLower;
