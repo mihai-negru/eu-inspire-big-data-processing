@@ -28,6 +28,7 @@ public class TestJobService {
     public void submitNewTestJob(final TestRequest req) {
         TestJob job = TestJob.builder()
                 .requestId(req.getId())
+                .requestGroupId(req.getGroupId())
                 .created(Instant.now())
                 .updated(Instant.now())
                 .build();
@@ -72,7 +73,7 @@ public class TestJobService {
                 continue;
 
             counter++;
-            responses.add(new TestResponse(job.getRequestId(), status));
+            responses.add(new TestResponse(job.getRequestId(), job.getRequestGroupId(), status));
             testJobRepository.delete(job);
         }
 

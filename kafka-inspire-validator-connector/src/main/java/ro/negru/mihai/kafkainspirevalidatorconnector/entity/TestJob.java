@@ -19,6 +19,9 @@ public class TestJob {
     @Column(nullable = false)
     private String requestId;
 
+    @Column(nullable = false)
+    private String requestGroupId;
+
     @Column
     private String testObjectId;
 

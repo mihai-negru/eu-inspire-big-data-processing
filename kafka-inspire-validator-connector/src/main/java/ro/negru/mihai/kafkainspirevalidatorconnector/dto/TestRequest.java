@@ -15,6 +15,9 @@ public class TestRequest {
     private String id;
 
     @NotBlank
+    private String groupId;
+
+    @NotBlank
     private String etsFamily;
 
     @NotBlank

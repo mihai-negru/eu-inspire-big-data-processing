@@ -12,5 +12,6 @@ import ro.negru.mihai.kafkainspirevalidatorconnector.status.ValidatorTestRespons
 @NoArgsConstructor
 public class TestResponse {
     private String id;
+    private String groupId;
     private ValidatorTestResponse status;
 }
