@@ -50,7 +50,7 @@ public class ApplyTestStrategyMapFunction extends RichFlatMapFunction<ValidatorT
     }
 
     @Override
-    public void flatMap(ValidatorTestResponse validatorTestResponse, Collector<TransformResult> collector) throws Exception {
+    public void flatMap(ValidatorTestResponse validatorTestResponse, Collector<TransformResult> collector) {
         LOGGER.info("Calculating the status for validator output");
         final List<TestAssertion> originalAssertions = validatorTestResponse.getStatus().getEtsAssertions();
 

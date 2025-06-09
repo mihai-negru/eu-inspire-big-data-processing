@@ -180,7 +180,13 @@ public final class XmlUtils {
                 path.append('.').append(parts[i]).append(".holder");
             }
         }
-        path.append('.').append(parts[parts.length - 1]).append(".holder");
+
+        if ("voidValue".equals(parts[parts.length - 1]) || "voidReason".equals(parts[parts.length - 1]) ) {
+            path.append('.').append(parts[parts.length - 1]);
+        } else {
+            path.append('.').append(parts[parts.length - 1]).append(".holder");
+        }
+
         pathSize += parts.length;
         return new XmlPath(path.toString(), pathSize);
     }

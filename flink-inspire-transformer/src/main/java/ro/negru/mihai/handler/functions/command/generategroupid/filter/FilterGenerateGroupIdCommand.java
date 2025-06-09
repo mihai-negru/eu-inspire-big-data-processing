@@ -6,7 +6,7 @@ import ro.negru.mihai.entity.command.CommandRequest;
 
 public class FilterGenerateGroupIdCommand extends RichFilterFunction<CommandRequest> {
     @Override
-    public boolean filter(CommandRequest request) throws Exception {
+    public boolean filter(CommandRequest request) {
         return request.getCommand() == Command.GENERATE_GROUP;
     }
 }

@@ -26,7 +26,7 @@ public class InspireFlatMapRawTransform extends RichFlatMapFunction<TransformReq
     }
 
     @Override
-    public void flatMap(TransformRequest record, Collector<PostTransformRequest> collector) throws Exception {
+    public void flatMap(TransformRequest record, Collector<PostTransformRequest> collector) {
         LOGGER.info("Received a transform request for the following schema: {}", record.getSchema());
         if (!availableSchemas.contains(record.getSchema())) {
             LOGGER.error("Transform schema {} is not available", record.getSchema());
@@ -44,7 +44,12 @@ public class InspireFlatMapRawTransform extends RichFlatMapFunction<TransformReq
         if (transformed != null) {
             LOGGER.info("Successfully transformed the schema message: {}", record.getSchema());
             final StringWriter writer = new StringWriter();
-            xmlMapper.writeValue(writer, transformed);
+
+            try {
+                xmlMapper.writeValue(writer, transformed);
+            } catch (Exception e) {
+                LOGGER.error("Exception happened when serializing the message", e);
+            }
 
             final String id = UUID.randomUUID().toString();
             final String groupId = record.getGroupId();

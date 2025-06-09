@@ -17,10 +17,7 @@ import ro.negru.mihai.entity.command.MergeCommandData;
 import ro.negru.mihai.entity.command.MergeCommandGroupedData;
 import ro.negru.mihai.xml.xmladapter.XmlUtils;
 
-import java.io.IOException;
-import java.io.StringWriter;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -31,7 +28,7 @@ public class CommandMergeExecutor extends RichFlatMapFunction<MergeCommandGroupe
     private static final BeanUtil JODD = BeanUtil.declaredForced;
 
     @Override
-    public void flatMap(MergeCommandGroupedData groupedValues, Collector<CommandResult> collector) throws Exception {
+    public void flatMap(MergeCommandGroupedData groupedValues, Collector<CommandResult> collector) {
         final List<MergeCommandData> items = groupedValues.getData();
         if (items == null || items.isEmpty()) {
             LOGGER.warn("No items in group found for merge command");
@@ -59,11 +56,20 @@ public class CommandMergeExecutor extends RichFlatMapFunction<MergeCommandGroupe
                 continue;
             }
 
-            JODD.setProperty(rootFeature, subForcedPath, subFeature);
+            try {
+                JODD.setProperty(rootFeature, subForcedPath, subFeature);
+            } catch (Exception e) {
+                LOGGER.error("Error setting property for merge command", e);
+            }
         }
 
-        ByteBuffer xml = ByteBuffer.wrap(xmlMapper.writeValueAsBytes(rootFeatureCollection));
-        collector.collect(new CommandResult(items.get(0).getGroupId(), Command.MERGE.getValue(), xml));
+        try {
+            ByteBuffer xml = ByteBuffer.wrap(xmlMapper.writeValueAsBytes(rootFeatureCollection));
+            collector.collect(new CommandResult(items.get(0).getGroupId(), Command.MERGE.getValue(), xml));
+        } catch (Exception e) {
+            LOGGER.error("Error serializing root feature collection", e);
+            return;
+        }
     }
 
     @NoArgsConstructor
