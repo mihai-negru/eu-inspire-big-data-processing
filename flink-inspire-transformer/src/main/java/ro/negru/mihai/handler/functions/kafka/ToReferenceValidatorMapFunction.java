@@ -7,6 +7,6 @@ import ro.negru.mihai.entity.kafka.ValidatorTestRequest;
 public class ToReferenceValidatorMapFunction extends RichMapFunction<PostTransformRequest, ValidatorTestRequest> {
     @Override
     public ValidatorTestRequest map(PostTransformRequest post){
-        return new ValidatorTestRequest(post.getId(), post.getEtsFamily(), post.getXml());
+        return new ValidatorTestRequest(post.getId(), post.getGroupId(), post.getEtsFamily(), post.getXml());
     }
 }

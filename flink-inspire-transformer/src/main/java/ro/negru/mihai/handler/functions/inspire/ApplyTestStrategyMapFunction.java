@@ -4,9 +4,11 @@ import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.cql.PreparedStatement;
 import com.datastax.oss.driver.api.core.cql.Row;
 import org.apache.flink.api.common.functions.OpenContext;
-import org.apache.flink.api.common.functions.RichMapFunction;
+import org.apache.flink.api.common.functions.RichFlatMapFunction;
+import org.apache.flink.util.Collector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ro.negru.mihai.configure.OSEnvHandler;
 import ro.negru.mihai.configure.TestStrategy;
 import ro.negru.mihai.configure.entity.pipeline.TestRule;
 import ro.negru.mihai.configure.entity.pipeline.Trigger;
@@ -18,14 +20,13 @@ import ro.negru.mihai.entity.validator.MappedTestAssertion;
 import ro.negru.mihai.entity.validator.TestAssertion;
 import ro.negru.mihai.entity.validator.ValidatorTestResponse;
 import ro.negru.mihai.handler.utils.CassandraUtils;
-import ro.negru.mihai.configure.OSEnvHandler;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class ApplyTestStrategyMapFunction extends RichMapFunction<ValidatorTestResponse, TransformResult> {
+public class ApplyTestStrategyMapFunction extends RichFlatMapFunction<ValidatorTestResponse, TransformResult> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplyTestStrategyMapFunction.class);
 
     private transient CqlSession session;
@@ -45,24 +46,26 @@ public class ApplyTestStrategyMapFunction extends RichMapFunction<ValidatorTestR
         super.open(openContext);
 
         session = CassandraUtils.getSession(osEnvHandler);
-        lookupSchemaStatement = session.prepare(TransformResult.lookUpStatement());
+        lookupSchemaStatement = session.prepare(TransformResult.lookUpIdStatement());
     }
 
     @Override
-    public TransformResult map(ValidatorTestResponse validatorTestResponse) throws Exception {
+    public void flatMap(ValidatorTestResponse validatorTestResponse, Collector<TransformResult> collector) throws Exception {
         LOGGER.info("Calculating the status for validator output");
         final List<TestAssertion> originalAssertions = validatorTestResponse.getStatus().getEtsAssertions();
 
         final String id = validatorTestResponse.getId();
-        if (id == null) {
-            LOGGER.warn("The id of the validator output is null");
-            return new TransformResult(validatorTestResponse.getId(), null, null, null, null, Status.FAILED.str(), generateFailureDetails(originalAssertions));
+        final String groupId = validatorTestResponse.getGroupId();
+        if (id == null || groupId == null) {
+            LOGGER.warn("The id or groupId of the validator output is null");
+            return;
         }
 
-        final Row lookupRow = session.execute(lookupSchemaStatement.bind(id)).one();
+        final Row lookupRow = session.execute(lookupSchemaStatement.bind(groupId, id)).one();
         if (lookupRow == null) {
             LOGGER.warn("The schema id {} does not exist", id);
-            return new TransformResult(validatorTestResponse.getId(), null, null, null, null, Status.FAILED.str(), generateFailureDetails(originalAssertions));
+            collector.collect(new TransformResult(id, groupId, null, null, null, Status.FAILED.str(), generateFailureDetails(originalAssertions)));
+            return;
         }
 
         final TransformResult lookupElement = TransformResult.fromRow(lookupRow);
@@ -71,7 +74,8 @@ public class ApplyTestStrategyMapFunction extends RichMapFunction<ValidatorTestR
         testSchemaConfig = testStrategy.getSchemaConfig(lookupElement.getXmlSchema());
         if (testSchemaConfig == null) {
             LOGGER.warn("The schema id {} does not exist", id);
-            return new TransformResult(validatorTestResponse.getId(), null, null, null, null, Status.FAILED.str(), generateFailureDetails(originalAssertions));
+            collector.collect(new TransformResult(id, groupId, null, null, null, Status.FAILED.str(), generateFailureDetails(originalAssertions)));
+            return;
         }
 
         final List<String> whitelist = testSchemaConfig.getWhitelist();
@@ -81,11 +85,12 @@ public class ApplyTestStrategyMapFunction extends RichMapFunction<ValidatorTestR
         if (hasAnyHardTestsFail(mappedAssertions)) {
             LOGGER.warn("The validation test '{}' has hard test failures, the test is automatically failed", id);
 
-            return new TransformResult(validatorTestResponse.getId(), null, null, null, null, Status.FAILED.str(), generateFailureDetails(originalAssertions));
+            collector.collect(new TransformResult(id, groupId, null, null, null, Status.FAILED.str(), generateFailureDetails(originalAssertions)));
+            return;
         }
 
         final Trigger trigger = evaluatePipeline(mappedAssertions);
-        return new TransformResult(validatorTestResponse.getId(), null, null, null, null, trigger == Trigger.PASS ? Status.PASSED.str() : Status.FAILED.str(), generateFailureDetails(originalAssertions));
+        collector.collect(new TransformResult(id, groupId, null, null, null, trigger == Trigger.PASS ? Status.PASSED.str() : Status.FAILED.str(), generateFailureDetails(originalAssertions)));
     }
 
     private List<MappedTestAssertion> mappedAssertionsStream(final List<TestAssertion> assertions) {

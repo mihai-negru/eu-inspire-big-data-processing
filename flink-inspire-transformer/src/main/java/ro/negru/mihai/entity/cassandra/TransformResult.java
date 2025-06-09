@@ -2,6 +2,7 @@ package ro.negru.mihai.entity.cassandra;
 
 import com.datastax.driver.mapping.annotations.Column;
 import com.datastax.driver.mapping.annotations.Table;
+import com.datastax.oss.driver.api.core.cql.Row;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,8 +10,6 @@ import lombok.Setter;
 
 import java.nio.ByteBuffer;
 import java.util.Map;
-
-import com.datastax.oss.driver.api.core.cql.Row;
 
 @Table(keyspace = "inspire", name = "transformed")
 @Getter
@@ -51,11 +50,11 @@ public class TransformResult {
         return new TransformResult(id, groupId, xmlSchema, xmlPath, xmlBytes, status, failureDetails);
     }
 
-    public static String lookUpStatement() {
-        return "SELECT * FROM transformed WHERE id=?";
+    public static String lookUpIdStatement() {
+        return "SELECT * FROM transformed WHERE group_id = ? AMD id = ?";
     }
 
     public static String lookUpGroupStatement() {
-        return "SELECT * FROM transformed WHERE group_id=?";
+        return "SELECT * FROM transformed WHERE group_id = ?";
     }
 }

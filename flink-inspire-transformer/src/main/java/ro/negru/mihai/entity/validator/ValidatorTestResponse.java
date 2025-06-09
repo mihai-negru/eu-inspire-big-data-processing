@@ -11,5 +11,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ValidatorTestResponse {
     private String id;
+    private String groupId;
     private TestAssertionWrapper status;
 }

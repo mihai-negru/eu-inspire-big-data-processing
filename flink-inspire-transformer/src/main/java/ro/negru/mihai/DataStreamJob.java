@@ -69,7 +69,7 @@ public class DataStreamJob {
 
 		LOGGER.info("Creating the Casandra sinker to update newly validated responses");
 		final DataStream<TransformResult> cassandraUpdateStatusStream = kafkaValidatedStream
-				.map(new ApplyTestStrategyMapFunction(osEnvHandler, testStrategy)).name("ToValidatedCassandraDB").returns(TypeInformation.of(TransformResult.class));
+				.flatMap(new ApplyTestStrategyMapFunction(osEnvHandler, testStrategy)).name("ToValidatedCassandraDB").returns(TypeInformation.of(TransformResult.class));
 		CassandraUtils.sinker(osEnvHandler, false, cassandraUpdateStatusStream);
 		LOGGER.info("Successfully created Cassandra update sinker");
 
