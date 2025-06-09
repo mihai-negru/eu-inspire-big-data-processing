@@ -5,6 +5,7 @@ import org.apache.flink.util.Collector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ro.negru.mihai.entity.cassandra.CommandResult;
+import ro.negru.mihai.entity.command.Command;
 import ro.negru.mihai.entity.command.CommandRequest;
 
 import java.util.UUID;
@@ -21,6 +22,6 @@ public class CommandGenerateGroupIdExecutor extends RichFlatMapFunction<CommandR
             groupId = UUID.randomUUID().toString();
         }
 
-        collector.collect(new CommandResult(groupId, request.getCommand().getValue(), null));
+        collector.collect(new CommandResult(UUID.randomUUID().toString(), groupId, Command.GENERATE_GROUP.getValue(), null));
     }
 }

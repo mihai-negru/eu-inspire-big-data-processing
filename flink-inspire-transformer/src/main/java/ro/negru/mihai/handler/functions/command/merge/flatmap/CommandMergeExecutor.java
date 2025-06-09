@@ -21,6 +21,7 @@ import java.nio.ByteBuffer;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 public class CommandMergeExecutor extends RichFlatMapFunction<MergeCommandGroupedData, CommandResult> {
     private static final Logger LOGGER = LoggerFactory.getLogger(CommandMergeExecutor.class);
@@ -65,7 +66,7 @@ public class CommandMergeExecutor extends RichFlatMapFunction<MergeCommandGroupe
 
         try {
             ByteBuffer xml = ByteBuffer.wrap(xmlMapper.writeValueAsBytes(rootFeatureCollection));
-            collector.collect(new CommandResult(items.get(0).getGroupId(), Command.MERGE.getValue(), xml));
+            collector.collect(new CommandResult(UUID.randomUUID().toString(), items.get(0).getGroupId(), Command.MERGE.getValue(), xml));
         } catch (Exception e) {
             LOGGER.error("Error serializing root feature collection", e);
             return;

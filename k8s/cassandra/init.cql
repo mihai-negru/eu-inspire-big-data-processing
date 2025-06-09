@@ -12,7 +12,9 @@ CREATE TABLE IF NOT EXISTS inspire.transformed (
 ) WITH CLUSTERING ORDER BY (id ASC);
 
 CREATE TABLE IF NOT EXISTS inspire.executed (
-    id              text PRIMARY KEY,
+    id              text,
+    group_id        text,
     command         text,
-    obj             blob
-);
+    obj             blob,
+    PRIMARY KEY ((group_id), id)
+) WITH CLUSTERING ORDER BY (id ASC);

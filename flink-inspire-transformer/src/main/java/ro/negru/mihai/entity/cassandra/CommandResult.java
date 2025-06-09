@@ -19,6 +19,9 @@ public class CommandResult {
     @Column(name = "id")
     private String id;
 
+    @Column(name = "group_id")
+    private String groupId;
+
     @Column(name = "command")
     private String command;
 
@@ -27,9 +30,10 @@ public class CommandResult {
 
     public static CommandResult fromRow(Row row) {
         final String id = row.getString("id");
+        final String groupId = row.getString("group_id");
         final String command = row.getString("command");
         final ByteBuffer obj = row.getByteBuffer("obj");
 
-        return new CommandResult(id, command, obj);
+        return new CommandResult(id, groupId, command, obj);
     }
 }
