@@ -19,3 +19,23 @@ schemas:
         failed: 1
     testPipeline:
       - rule: "count(passed) > 1"
+  - name: FCGeographicalName
+    hardTests:
+      - ets1
+      - ets2
+      - ets3
+    whitelist:
+      - ets1
+      - ets2
+      - ets3
+    status:
+      mapping:
+        warning: passed
+        undefined: passed
+        info: passed
+        not_applicable: passed
+      weight:
+        passed: 5
+        failed: 1
+    testPipeline:
+      - rule: "count(passed) > 1"

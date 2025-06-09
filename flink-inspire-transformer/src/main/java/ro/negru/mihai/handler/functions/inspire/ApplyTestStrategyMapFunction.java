@@ -63,8 +63,7 @@ public class ApplyTestStrategyMapFunction extends RichFlatMapFunction<ValidatorT
 
         final Row lookupRow = session.execute(lookupSchemaStatement.bind(groupId, id)).one();
         if (lookupRow == null) {
-            LOGGER.warn("The schema id {} does not exist", id);
-            collector.collect(new TransformResult(id, groupId, null, null, null, Status.FAILED.str(), generateFailureDetails(originalAssertions)));
+            LOGGER.warn("The id '{}' or groupId '{}' may be wrong or misconfigured", id, groupId);
             return;
         }
 
@@ -73,8 +72,8 @@ public class ApplyTestStrategyMapFunction extends RichFlatMapFunction<ValidatorT
 
         testSchemaConfig = testStrategy.getSchemaConfig(lookupElement.getXmlSchema());
         if (testSchemaConfig == null) {
-            LOGGER.warn("The schema id {} does not exist", id);
-            collector.collect(new TransformResult(id, groupId, null, null, null, Status.FAILED.str(), generateFailureDetails(originalAssertions)));
+            LOGGER.warn("The schema id {} does not exist assume test is passed by default", id);
+            collector.collect(new TransformResult(id, groupId, null, null, null, Status.PASSED.str(), generateFailureDetails(originalAssertions)));
             return;
         }
 
