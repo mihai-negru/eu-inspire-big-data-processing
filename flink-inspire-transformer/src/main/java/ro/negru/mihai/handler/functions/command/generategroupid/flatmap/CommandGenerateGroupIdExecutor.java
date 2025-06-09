@@ -1,11 +1,11 @@
-package ro.negru.mihai.handler.functions.command;
+package ro.negru.mihai.handler.functions.command.generategroupid.flatmap;
 
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
 import org.apache.flink.util.Collector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ro.negru.mihai.entity.cassandra.CommandResult;
-import ro.negru.mihai.entity.kafka.CommandRequest;
+import ro.negru.mihai.entity.command.CommandRequest;
 
 import java.util.UUID;
 

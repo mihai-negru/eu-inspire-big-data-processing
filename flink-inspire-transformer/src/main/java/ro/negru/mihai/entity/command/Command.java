@@ -1,4 +1,4 @@
-package ro.negru.mihai.entity.kafka;
+package ro.negru.mihai.entity.command;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;

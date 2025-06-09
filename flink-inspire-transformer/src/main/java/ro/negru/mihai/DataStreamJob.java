@@ -2,7 +2,6 @@ package ro.negru.mihai;
 
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.core.execution.CheckpointingMode;
-import org.apache.flink.shaded.zookeeper3.org.apache.zookeeper.server.admin.CommandResponse;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.slf4j.Logger;
@@ -10,13 +9,19 @@ import org.slf4j.LoggerFactory;
 import ro.negru.mihai.configure.TestStrategy;
 import ro.negru.mihai.entity.cassandra.CommandResult;
 import ro.negru.mihai.entity.cassandra.TransformResult;
+import ro.negru.mihai.entity.command.CommandRequest;
+import ro.negru.mihai.entity.command.MergeCommandData;
+import ro.negru.mihai.entity.command.MergeCommandGroupedData;
+import ro.negru.mihai.entity.command.MergeCommandPreTransform;
 import ro.negru.mihai.entity.kafka.*;
 import ro.negru.mihai.entity.validator.ValidatorTestResponse;
-import ro.negru.mihai.handler.functions.command.CommandGenerateGroupIdExecutor;
-import ro.negru.mihai.handler.functions.command.CommandMergeConvertToFeatureExecutor;
-import ro.negru.mihai.handler.functions.command.CommandMergeFetchDbRowsExecutor;
-import ro.negru.mihai.handler.functions.command.filter.FilterGenerateGroupIdCommand;
-import ro.negru.mihai.handler.functions.command.filter.FilterMergeCommand;
+import ro.negru.mihai.handler.functions.command.generategroupid.flatmap.CommandGenerateGroupIdExecutor;
+import ro.negru.mihai.handler.functions.command.merge.flatmap.CommandMergeConvertToFeatureExecutor;
+import ro.negru.mihai.handler.functions.command.merge.flatmap.CommandMergeExecutor;
+import ro.negru.mihai.handler.functions.command.merge.flatmap.CommandMergeFetchDbRowsExecutor;
+import ro.negru.mihai.handler.functions.command.generategroupid.filter.FilterGenerateGroupIdCommand;
+import ro.negru.mihai.handler.functions.command.merge.filter.FilterMergeCommand;
+import ro.negru.mihai.handler.functions.command.merge.keyprocess.CommandMergeGroupKeyProcessExtractor;
 import ro.negru.mihai.handler.functions.inspire.ApplyTestStrategyMapFunction;
 import ro.negru.mihai.handler.functions.inspire.InspireFlatMapRawTransform;
 import ro.negru.mihai.handler.functions.cassandra.PendingCassandraMapFunction;
@@ -48,33 +53,43 @@ public class DataStreamJob {
 		LOGGER.info("Successfully created Kafka Input Sources");
 
 		LOGGER.info("Creating the transformer routine and a sinker back to kafka for validation");
-		final DataStream<PostTransformRequest> transformedDataStream = rawDataStream.flatMap(new InspireFlatMapRawTransform(XmlUtils.getAvailableSchemas())).name("ToINSPIRECompliant").returns(TypeInformation.of(PostTransformRequest.class));
+		final DataStream<PostTransformRequest> transformedDataStream = rawDataStream
+				.flatMap(new InspireFlatMapRawTransform(XmlUtils.getAvailableSchemas())).name("ToINSPIRECompliant").returns(TypeInformation.of(PostTransformRequest.class));
 
-		final DataStream<ValidatorTestRequest> toValidateTransformedDataStream = transformedDataStream.map(new ToReferenceValidatorMapFunction()).name("ToINSPIREReferenceValidator").returns(TypeInformation.of(ValidatorTestRequest.class));
+		final DataStream<ValidatorTestRequest> toValidateTransformedDataStream = transformedDataStream
+				.map(new ToReferenceValidatorMapFunction()).name("ToINSPIREReferenceValidator").returns(TypeInformation.of(ValidatorTestRequest.class));
 		KafkaUtils.sinker(osEnvHandler.getEnv("toValidateStream"), osEnvHandler, toValidateTransformedDataStream);
 		LOGGER.info("Successfully created transformer routines");
 
 		LOGGER.info("Creating the Casandra sinker to insert newly non-validated responses");
-		final DataStream<TransformResult> cassandraPendingStream = transformedDataStream.map(new PendingCassandraMapFunction()).name("ToUnvalidatedCassandraDB").returns(TypeInformation.of(TransformResult.class));
+		final DataStream<TransformResult> cassandraPendingStream = transformedDataStream
+				.map(new PendingCassandraMapFunction()).name("ToUnvalidatedCassandraDB").returns(TypeInformation.of(TransformResult.class));
 		CassandraUtils.sinker(osEnvHandler, true, cassandraPendingStream);
 		LOGGER.info("Successfully created Cassandra insert sinker");
 
 		LOGGER.info("Creating the Casandra sinker to update newly validated responses");
-		final DataStream<TransformResult> cassandraUpdateStatusStream = kafkaValidatedStream.map(new ApplyTestStrategyMapFunction(osEnvHandler, testStrategy)).name("ToValidatedCassandraDB").returns(TypeInformation.of(TransformResult.class));
+		final DataStream<TransformResult> cassandraUpdateStatusStream = kafkaValidatedStream
+				.map(new ApplyTestStrategyMapFunction(osEnvHandler, testStrategy)).name("ToValidatedCassandraDB").returns(TypeInformation.of(TransformResult.class));
 		CassandraUtils.sinker(osEnvHandler, false, cassandraUpdateStatusStream);
 		LOGGER.info("Successfully created Cassandra update sinker");
 
 		/* Here starts the functions for the command */
-		final DataStream<CommandRequest> commandGenerateGroupIdStream = commandSignalStream.filter(new FilterGenerateGroupIdCommand()).returns(TypeInformation.of(CommandRequest.class));
-		final DataStream<CommandRequest> commandMergeStream = commandSignalStream.filter(new FilterMergeCommand()).returns(TypeInformation.of(CommandRequest.class));
+		final DataStream<CommandRequest> commandGenerateGroupIdStream = commandSignalStream
+				.filter(new FilterGenerateGroupIdCommand()).name("FilterGenerateGroupIdCommand").returns(TypeInformation.of(CommandRequest.class));
+		final DataStream<CommandRequest> commandMergeStream = commandSignalStream
+				.filter(new FilterMergeCommand()).name("FilterMergeCommand").returns(TypeInformation.of(CommandRequest.class));
 
-		final DataStream<CommandResult> commandGenerateGroupIdStreamResult = commandGenerateGroupIdStream.flatMap(new CommandGenerateGroupIdExecutor()).returns(TypeInformation.of(CommandResult.class));
-		CassandraUtils.sinker(osEnvHandler, true, commandGenerateGroupIdStreamResult);
+		final DataStream<CommandResult> commandGenerateGroupIdStreamResult = commandGenerateGroupIdStream
+				.flatMap(new CommandGenerateGroupIdExecutor()).name("ExecuteGenerateCommand").returns(TypeInformation.of(CommandResult.class));
 
-//		final DataStream<TransformResult> commandMergeStreamResult = commandMergeStream
-//				.flatMap(new CommandMergeFetchDbRowsExecutor(osEnvHandler)).returns(TypeInformation.of(TransformResult.class))
-//				.flatMap(new CommandMergeConvertToFeatureExecutor()).returns(TypeInformation.of(TransformResult.class));
+		final DataStream<CommandResult> commandMergeStreamResult = commandMergeStream
+				.flatMap(new CommandMergeFetchDbRowsExecutor(osEnvHandler)).name("FromRowsToTransformed").returns(TypeInformation.of(MergeCommandPreTransform.class))
+				.flatMap(new CommandMergeConvertToFeatureExecutor()).name("FromTransformedXmlToInspireCompliant").returns(TypeInformation.of(MergeCommandData.class))
+				.keyBy(MergeCommandData::getGroupId)
+				.process(new CommandMergeGroupKeyProcessExtractor()).name("ToGroupedInspireCompliant").returns(TypeInformation.of(MergeCommandGroupedData.class))
+				.flatMap(new CommandMergeExecutor()).name("ExecuteMergeCommand").returns(TypeInformation.of(CommandResult.class));
 
+		CassandraUtils.sinker(osEnvHandler, true, commandGenerateGroupIdStreamResult, commandMergeStreamResult);
 		/* Here ends the functions for the command */
 
 		if (osEnvHandler.isTransformerLoggerEnabled()) {

@@ -1,4 +1,4 @@
-package ro.negru.mihai.entity.kafka;
+package ro.negru.mihai.entity.command;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
