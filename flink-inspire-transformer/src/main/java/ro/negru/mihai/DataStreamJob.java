@@ -73,7 +73,6 @@ public class DataStreamJob {
 		CassandraUtils.sinker(osEnvHandler, false, cassandraUpdateStatusStream);
 		LOGGER.info("Successfully created Cassandra update sinker");
 
-		/* Here starts the functions for the command */
 		final DataStream<CommandRequest> commandGenerateGroupIdStream = commandSignalStream
 				.filter(new FilterGenerateGroupIdCommand()).name("FilterGenerateGroupIdCommand").returns(TypeInformation.of(CommandRequest.class));
 		final DataStream<CommandRequest> commandMergeStream = commandSignalStream
@@ -90,10 +89,9 @@ public class DataStreamJob {
 				.flatMap(new CommandMergeExecutor()).name("ExecuteMergeCommand").returns(TypeInformation.of(CommandResult.class));
 
 		CassandraUtils.sinker(osEnvHandler, true, commandGenerateGroupIdStreamResult, commandMergeStreamResult);
-		/* Here ends the functions for the command */
 
 		if (osEnvHandler.isTransformerLoggerEnabled()) {
-			KafkaUtils.sinker(osEnvHandler.getEnv("toTransformerLogger"), osEnvHandler, cassandraUpdateStatusStream, commandGenerateGroupIdStreamResult);
+			KafkaUtils.sinker(osEnvHandler.getEnv("toTransformerLogger"), osEnvHandler, cassandraUpdateStatusStream, commandGenerateGroupIdStreamResult, commandMergeStreamResult);
 		}
 
 		env.execute("INSPIRE EU Directive Transform Pipeline Application Job");

@@ -42,6 +42,7 @@ under the License.
 		<cassandra.connector.version>3.0.0-1.16</cassandra.connector.version>
 		<cassandra.driver.version>4.18.1</cassandra.driver.version>
 		<lombok.version>1.18.34</lombok.version>
+		<jodd.version>5.1.6</jodd.version>
 	</properties>
 
 	<repositories>
@@ -121,6 +122,11 @@ under the License.
 			<groupId>org.apache.cassandra</groupId>
 			<artifactId>java-driver-core</artifactId>
 			<version>${cassandra.driver.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jodd</groupId>
+			<artifactId>jodd-bean</artifactId>
+			<version>${jodd.version}</version>
 		</dependency>
 
 		<!-- Add logging framework, to produce console output when running in the IDE. -->

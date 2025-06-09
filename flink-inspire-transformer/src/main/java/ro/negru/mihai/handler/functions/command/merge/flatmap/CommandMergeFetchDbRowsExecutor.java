@@ -29,7 +29,7 @@ public class CommandMergeFetchDbRowsExecutor extends RichFlatMapFunction<Command
     }
 
     @Override
-    public void flatMap(CommandRequest request, Collector<MergeCommandPreTransform> collector) throws Exception {
+    public void flatMap(CommandRequest request, Collector<MergeCommandPreTransform> collector) {
         final String groupId = request.getGroupId();
         if (groupId == null || groupId.isBlank()) {
             LOGGER.error("GroupId is null or empty and is not allowed for merge command");

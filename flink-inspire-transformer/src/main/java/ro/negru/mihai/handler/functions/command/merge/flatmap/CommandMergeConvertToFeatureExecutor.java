@@ -32,7 +32,7 @@ public class CommandMergeConvertToFeatureExecutor extends RichFlatMapFunction<Me
 
         if (transformedFeature != null) {
             LOGGER.info("Successfully transformed(merge command) the schema message: {}", transformed.getXmlSchema());
-            collector.collect(new MergeCommandData(transformed.getGroupId(), transformed.getXmlSchema(), transformed.getXmlPath(), transformedFeature, batchSize));
+            collector.collect(new MergeCommandData(transformed.getGroupId(), transformed.getXmlPath(), transformedFeature, batchSize));
         } else {
             LOGGER.error("The schema {} message {} could not be transformed (merge command), due to unknown reasons", transformed.getXmlSchema(), transformed.getXml());
         }

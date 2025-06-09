@@ -12,7 +12,6 @@ import ro.negru.mihai.base.featuretype.FeatureCollection;
 @Setter
 public class MergeCommandData {
     private String groupId;
-    private String xmlSchema;
     private String xmlPath;
     private FeatureCollection<?> feature;
     private long batchSize;
