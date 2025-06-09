@@ -51,7 +51,7 @@ public class TransformResult {
     }
 
     public static String lookUpIdStatement() {
-        return "SELECT * FROM transformed WHERE group_id = ? AMD id = ?";
+        return "SELECT * FROM transformed WHERE group_id = ? AND id = ?";
     }
 
     public static String lookUpGroupStatement() {
