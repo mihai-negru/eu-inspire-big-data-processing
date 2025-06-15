@@ -7,6 +7,7 @@ public enum TestOperator {
     LT("<"),
     LTE("<="),
     EQ("="),
+    NEQ("!="),
     GTE(">="),
     GT(">");
 
@@ -32,6 +33,7 @@ public enum TestOperator {
             case LT -> (cmp < 0);
             case LTE -> (cmp <= 0);
             case EQ -> (cmp == 0);
+            case NEQ -> (cmp != 0);
             case GTE -> (cmp >= 0);
             case GT -> (cmp > 0);
         };

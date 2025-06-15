@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 
 public class AllTestsWeightConditionParser implements ConditionParser {
     private static final Pattern ALL_TESTS_WEIGHT_PATTERN = Pattern.compile(
-            "\\s*allTestsWeight\\s*(<=|>=|<|>|=)\\s*([+-]?\\d+)\\s*",
+            "\\s*allTestsWeight\\s*(<=|>=|<|>|=|!=)\\s*([+-]?\\d+)\\s*",
             Pattern.CASE_INSENSITIVE
     );
 

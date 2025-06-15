@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 
 public class RatioConditionParser implements ConditionParser {
     private static final Pattern RATIO_PATTERN = Pattern.compile(
-            "\\s*ratio\\(\\s*([a-zA-Z]+)\\s*,\\s*([a-zA-Z]+)\\s*\\)\\s*(<=|>=|<|>|=)\\s*([+-]?\\d+(?:\\.\\d*)?)\\s*",
+            "\\s*ratio\\(\\s*([a-zA-Z]+)\\s*,\\s*([a-zA-Z]+)\\s*\\)\\s*(<=|>=|<|>|=|!=)\\s*([+-]?\\d+(?:\\.\\d*)?)\\s*",
             Pattern.CASE_INSENSITIVE
     );
 
