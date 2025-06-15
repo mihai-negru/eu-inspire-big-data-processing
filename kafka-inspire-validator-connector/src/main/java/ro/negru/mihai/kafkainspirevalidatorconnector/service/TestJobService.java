@@ -67,7 +67,13 @@ public class TestJobService {
 
         int counter = 0;
         for (TestJob job : jobs) {
-            final ValidatorTestResponse status = callInspireValidatorService.getTestRunStatus(job.getTestRunId());
+            ValidatorTestResponse status = null;
+            
+            try {
+                status = callInspireValidatorService.getTestRunStatus(job.getTestRunId());
+            } catch (Exception e) {
+                continue; // If an error occurs, skip this job
+            }
 
             if (status == null)
                 continue;
