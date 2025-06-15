@@ -58,7 +58,7 @@ public class TestJobService {
 
     public List<TestResponse> getCompletedTestJobsAsResponses() {
 
-        final List<TestJob> jobs = testJobRepository.findAll();
+        final List<TestJob> jobs = testJobRepository.findAll().stream().filter(job -> job.getTestObjectId() != null && job.getTestRunId() != null).toList();
         if (jobs.isEmpty()) {
             return List.of();
         }

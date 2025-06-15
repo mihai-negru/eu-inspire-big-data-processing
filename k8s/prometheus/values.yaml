@@ -1,0 +1,102 @@
+grafana:
+  enabled: true
+  admin:
+    existingSecret: prometheus-stack-secret
+    userKey: GRAFANA_ADMIN_USER
+    passwordKey: GRAFANA_ADMIN_PASSWORD
+
+  serviceMonitor:
+    enabled: true
+    namespace: monitoring
+
+
+
+  persistence:
+    enabled: true
+    storageClassName: standard
+    accessModes: ["ReadWriteOnce"]
+    size: 10Gi
+
+  service:
+    type: ClusterIP
+
+#  grafana.ini:
+#    server:
+#      root_url: "%(protocol)s://%(domain)s/grafana"
+#      serve_from_sub_path: false
+
+  ingress:
+    enabled: true
+    ingressClassName: kong
+    path: /grafana
+    pathType: Prefix
+    annotations:
+      konghq.com/strip-path: "false"
+    hosts: []
+
+
+  defaultDashboardsEnabled: true
+  sidecar:
+    dashboards:
+      enabled: true
+      searchNamespace: ALL
+    datasources:
+      enabled: true
+
+prometheus:
+  prometheusSpec:
+    retention: 2h
+    scrapeInterval: 1m
+    evaluationInterval: 1m
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: standard
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 5Gi
+
+    resources:
+      limits:
+        cpu: 300m
+        memory: 750Mi
+      requests:
+        cpu: 100m
+        memory: 500Mi
+
+prometheusOperator:
+  # createCustomResource: false
+
+  tls:
+    enabled: false
+
+  resources:
+    requests:
+      cpu: 50m
+      memory: 150Mi
+    limits:
+      cpu: 100m
+      memory: 300Mi
+
+alertmanager:
+  enabled: true
+  alertmanagerSpec:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 100Mi
+      limits:
+        cpu: 100m
+        memory: 200Mi
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: standard
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 1Gi
