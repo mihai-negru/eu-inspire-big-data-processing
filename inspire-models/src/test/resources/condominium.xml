@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<FeatureCollection>
+    <member>
+        <Condominium>
+            <geometry>
+                <MultiSurface id="AU.0202_4thOrder-0" srsName="http://www.opengis.net/def/crs/EPSG/0/3035" srsDimension="2">
+                    <surfaceMember>
+                        <Surface id="AU.0202_4thOrder-1">
+                            <patches>
+                                <PolygonPatch>
+                                    <exterior>
+                                        <LinearRing>
+                                            <posList>
+                                                2940167.597016461 4024656.410507965 2940182.2382102893 4024626.5752887772 2940183.902681832 4024623.1824332555 2940190.5098311305 4024609.7195446715 2940200.3090209924 4024591.170063764 2940212.830062531 4024568.386936618 2940229.645182929 4024537.2326373965 2940167.597016461 4024656.410507965
+                                            </posList>
+                                        </LinearRing>
+                                    </exterior>
+                                </PolygonPatch>
+                            </patches>
+                        </Surface>
+                    </surfaceMember>
+                </MultiSurface>
+            </geometry>
+            <inspireId>
+                <Identifier>
+                    <localId>AdministrativeBoundary_DESHPDHK0005YROI</localId>
+                    <namespace>https://registry.gdi-de.org/id/de.sh.inspire.au.alkis</namespace>
+                    <versionId>2.0.1</versionId>
+                </Identifier>
+            </inspireId>
+            <beginLifespanVersion nil="true"/>
+            <endLifespanVersion nil="true"/>
+            <admUnit nilReason="withheld" nil="true"/>
+        </Condominium>
+    </member>
+</FeatureCollection>

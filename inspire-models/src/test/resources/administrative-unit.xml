@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FeatureCollection>
+    <boundedBy>
+        <Envelope srsName="http://www.opengis.net/def/crs/EPSG/0/3035" srsDimension="2">
+            <lowerCorner>2933833.7612715582 4014629.9333070097</lowerCorner>
+            <upperCorner>3015534.2357642837 4071352.202985776</upperCorner>
+        </Envelope>
+    </boundedBy>
+    <featureMember>
+        <AdministrativeUnit id="AU.02_3rdOrder">
+            <country href="http://inspire.ec.europa.eu/codelist/CountryCode/DE"/>
+            <geometry>
+                <MultiPolygon srsName="EPSG:4326">
+                    <polygonMember>
+                        <Polygon>
+                            <outerBoundaryIs>
+                                <LinearRing>
+                                    <coordinates>1.313216,46.690770 1.000968,46.861087 0.887424,47.059790 1.142899,47.244300 1.355795,47.244300 1.554498,47.017211 1.710622,47.059790 1.767394,46.747542 1.313216,46.690770 1.313216,46.690770 </coordinates>
+                                </LinearRing>
+                            </outerBoundaryIs>
+                        </Polygon>
+                    </polygonMember>
+                    <polygonMember>
+                        <Polygon>
+                            <outerBoundaryIs>
+                                <LinearRing>
+                                    <coordinates>0.731300,46.605612 -0.191250,46.704963 -0.191250,46.846894 0.177770,46.988824 0.447438,46.960438 0.589369,46.804315 0.688721,46.832701 0.731300,46.605612 0.731300,46.605612 </coordinates>
+                                </LinearRing>
+                            </outerBoundaryIs>
+                        </Polygon>
+                    </polygonMember>
+                    <polygonMember>
+                        <Polygon>
+                            <outerBoundaryIs>
+                                <LinearRing>
+                                    <coordinates>-1.610557,46.733349 -1.184765,46.704963 -1.198958,46.704963 -0.943483,46.619805 -0.915096,46.818508 -0.659621,46.775928 -0.688007,47.017211 -0.943483,47.003018 -1.127992,47.088176 -1.397661,47.102369 -1.624750,47.073983 -1.738295,46.917859 -1.610557,46.733349 </coordinates>
+                                </LinearRing>
+                            </outerBoundaryIs>
+                        </Polygon>
+                    </polygonMember>
+                </MultiPolygon>
+            </geometry>
+            <inspireId>
+                <Identifier>
+                    <localId>AdministrativeBoundary_DESHPDHK0005YROI</localId>
+                    <namespace>https://registry.gdi-de.org/id/de.sh.inspire.au.alkis</namespace>
+                    <versionId>2.0.1</versionId>
+                </Identifier>
+            </inspireId>
+            <nationalCode>DE</nationalCode>
+            <nationalLevel href="http://inspire.ec.europa.eu/codelist/AdministrativeHierarchyLevel/5thValue"/>
+            <beginLifespanVersion nil="true"/>
+            <endLifespanVersion nil="true"/>
+            <nationalLevelName nil="true"/>
+            <residenceOfAuthority nilReason="withheld" nil="true"/>
+            <upperLevelUnit nilReason="unpopulated" nil="true"/>
+            <lowerLevelUnit nilReason="unpopulated" nil="true"/>
+            <coAdminister nilReason="unpopulated" nil="true"/>
+            <administeredBy nilReason="unpopulated" nil="true"/>
+        </AdministrativeUnit>
+    </featureMember>
+</FeatureCollection>

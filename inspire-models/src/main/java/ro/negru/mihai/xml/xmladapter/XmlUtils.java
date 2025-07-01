@@ -1,7 +1,9 @@
 package ro.negru.mihai.xml.xmladapter;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.xml.XmlFactory;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
@@ -11,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.geotools.geometry.jts.MultiSurface;
 import org.geotools.gml3.GML;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.LineString;
@@ -103,12 +106,14 @@ public final class XmlUtils {
             addDeserializer(Point.class, new GMLGeoToolsXmlDeserializer<>(Point.class));
             addDeserializer(LineString.class, new GMLGeoToolsXmlDeserializer<>(LineString.class));
             addDeserializer(MultiPolygon.class, new GMLGeoToolsXmlDeserializer<>(MultiPolygon.class));
+            addDeserializer(MultiSurface.class, new GMLGeoToolsXmlDeserializer<>(MultiSurface.class));
             addDeserializer(Envelope.class, new GMLGeoToolsXmlDeserializer<>(Envelope.class));
 
             addSerializer(Voidable.class, (JsonSerializer) new VoidableXmlSerializer<>());
             addSerializer(Point.class, new GMLGeoToolsXmlSerializer<>(Point.class, GML._Geometry));
             addSerializer(LineString.class, new GMLGeoToolsXmlSerializer<>(LineString.class, GML._Geometry));
             addSerializer(MultiPolygon.class, new GMLGeoToolsXmlSerializer<>(MultiPolygon.class, GML._Geometry));
+            addSerializer(MultiSurface.class, new GMLGeoToolsXmlSerializer<>(MultiSurface.class, GML._Geometry));
             addSerializer(Envelope.class, new GMLGeoToolsXmlSerializer<>(Envelope.class, GML.Envelope));
         }
 

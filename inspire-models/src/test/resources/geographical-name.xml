@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FeatureCollection>
+    <member>
+        <GeographicalName>
+            <spelling>
+                <SpellingOfName>
+                    <text>Erpeldange-sur</text>
+                    <script nilReason="unknown" nil="true"/>
+                    <transliterationScheme>http://www.erpeldange.com/transliteration/schema</transliterationScheme>
+                </SpellingOfName>
+            </spelling>
+            <grammaticalGender href="http://inspire.ec.europa.eu/codelist/GrammaticalGenderValue/neuter"/>
+            <grammaticalNumber href="http://inspire.ec.europa.eu/codelist/GrammaticalNumberValue/singular"/>
+            <language>fre</language>
+            <nameStatus href="http://inspire.ec.europa.eu/codelist/NameStatusValue/official"/>
+            <nativeness href="http://inspire.ec.europa.eu/codelist/NativenessValue/exonym"/>
+            <pronunciation>
+                <PronunciationOfName>
+                    <pronunciationIPA>fre-ipa</pronunciationIPA>
+                    <pronunciationSoundLink nilReason="withheld" nil="true"/>
+                </PronunciationOfName>
+            </pronunciation>
+            <sourceOfName nil="true"/>
+        </GeographicalName>
+    </member>
+</FeatureCollection>

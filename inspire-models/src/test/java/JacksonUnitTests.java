@@ -3,25 +3,30 @@ import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import ro.negru.mihai.application.schema.administrativeunits.featuretype.AdministrativeBoundary;
+import ro.negru.mihai.application.schema.administrativeunits.featuretype.AdministrativeUnit;
 import ro.negru.mihai.application.schema.administrativeunits.featuretype.Condominium;
 import ro.negru.mihai.application.schema.geographicalnames.datatype.GeographicalName;
 import ro.negru.mihai.base.featuretype.Feature;
 import ro.negru.mihai.base.featuretype.FeatureCollection;
 import ro.negru.mihai.base.featuretype.features.administrativeunits.FCAdministrativeBoundary;
+import ro.negru.mihai.base.featuretype.features.administrativeunits.FCAdministrativeUnit;
 import ro.negru.mihai.base.featuretype.features.administrativeunits.FCCondominium;
 import ro.negru.mihai.base.featuretype.features.geographicalnames.FCGeographicalName;
 import ro.negru.mihai.base.stereotype.Voidable;
 import ro.negru.mihai.xml.xmladapter.XmlUtils;
 
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.*;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class JacksonUnitTests {
     static XmlUtils.InspireXmlMapper xmlMapper;
@@ -109,5 +114,18 @@ public class JacksonUnitTests {
     public void testExternFeature() {
         FeatureCollection<AdministrativeBoundary> boundary = generateValue("extern-feature.xml", FCAdministrativeBoundary.class.getSimpleName());
         writeToOutputFile("target/extern-feature.xml", boundary, false);
+    }
+
+    @Test
+    public void delete() {
+        FeatureCollection<AdministrativeBoundary> boundary = generateValue("administrative-boundary.xml", FCAdministrativeBoundary.class.getSimpleName());
+        FeatureCollection<AdministrativeUnit> admUnit = generateValue("administrative-unit.xml", FCAdministrativeUnit.class.getSimpleName());
+        FeatureCollection<Condominium> condominium = generateValue("condominium.xml", FCCondominium.class.getSimpleName());
+        FeatureCollection<GeographicalName> geoName = generateValue("geographical-name.xml", FCGeographicalName.class.getSimpleName());
+
+        assertNotNull(boundary);
+        assertNotNull(admUnit);
+        assertNotNull(condominium);
+        assertNotNull(geoName);
     }
 }
