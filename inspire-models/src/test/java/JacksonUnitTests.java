@@ -123,6 +123,11 @@ public class JacksonUnitTests {
         FeatureCollection<Condominium> condominium = generateValue("condominium.xml", FCCondominium.class.getSimpleName());
         FeatureCollection<GeographicalName> geoName = generateValue("geographical-name.xml", FCGeographicalName.class.getSimpleName());
 
+        writeToOutputFile("target/delete-feature-1.xml", boundary, true);
+        writeToOutputFile("target/delete-feature-2.xml", admUnit, true);
+        writeToOutputFile("target/delete-feature-3.xml", condominium, true);
+        writeToOutputFile("target/delete-feature-4.xml", geoName, true);
+
         assertNotNull(boundary);
         assertNotNull(admUnit);
         assertNotNull(condominium);

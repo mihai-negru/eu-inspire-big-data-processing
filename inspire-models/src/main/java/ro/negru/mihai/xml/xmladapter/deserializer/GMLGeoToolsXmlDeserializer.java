@@ -7,12 +7,13 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.dataformat.xml.deser.FromXmlParser;
-import org.geotools.gml3.GMLConfiguration;
 import org.geotools.xsd.Parser;
 import ro.negru.mihai.xml.namespace.InspireNamespaces;
 
-import javax.xml.stream.*;
-import java.io.*;
+import javax.xml.stream.XMLStreamException;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,11 +23,11 @@ public class GMLGeoToolsXmlDeserializer<T> extends StdDeserializer<T> {
     private final Class<T> clazz;
     private final Parser parser;
 
-    public GMLGeoToolsXmlDeserializer(Class<T> clazz) {
+    public GMLGeoToolsXmlDeserializer(Class<T> clazz, Parser parser) {
         super(clazz);
         this.clazz = clazz;
 
-        parser = new Parser(new GMLConfiguration());
+        this.parser = parser;
     }
 
     @Override

@@ -15,6 +15,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.geotools.geometry.jts.MultiSurface;
 import org.geotools.gml3.GML;
+import org.geotools.xsd.Encoder;
+import org.geotools.xsd.Parser;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.MultiPolygon;
@@ -103,18 +105,18 @@ public final class XmlUtils {
         @SuppressWarnings({"unchecked", "rawtypes"})
         private void setCustomSerializersAndDeserializers() {
             addDeserializer(Voidable.class, new VoidableXmlDeserializer<>());
-            addDeserializer(Point.class, new GMLGeoToolsXmlDeserializer<>(Point.class));
-            addDeserializer(LineString.class, new GMLGeoToolsXmlDeserializer<>(LineString.class));
-            addDeserializer(MultiPolygon.class, new GMLGeoToolsXmlDeserializer<>(MultiPolygon.class));
-            addDeserializer(MultiSurface.class, new GMLGeoToolsXmlDeserializer<>(MultiSurface.class));
-            addDeserializer(Envelope.class, new GMLGeoToolsXmlDeserializer<>(Envelope.class));
+            addDeserializer(Point.class, new GMLGeoToolsXmlDeserializer<>(Point.class, new Parser(new org.geotools.gml2.GMLConfiguration())));
+            addDeserializer(LineString.class, new GMLGeoToolsXmlDeserializer<>(LineString.class, new Parser(new org.geotools.gml3.GMLConfiguration())));
+            addDeserializer(MultiPolygon.class, new GMLGeoToolsXmlDeserializer<>(MultiPolygon.class, new Parser(new org.geotools.gml2.GMLConfiguration())));
+            addDeserializer(MultiSurface.class, new GMLGeoToolsXmlDeserializer<>(MultiSurface.class, new Parser(new org.geotools.gml3.GMLConfiguration())));
+            addDeserializer(Envelope.class, new GMLGeoToolsXmlDeserializer<>(Envelope.class, new Parser(new org.geotools.gml3.GMLConfiguration())));
 
             addSerializer(Voidable.class, (JsonSerializer) new VoidableXmlSerializer<>());
-            addSerializer(Point.class, new GMLGeoToolsXmlSerializer<>(Point.class, GML._Geometry));
-            addSerializer(LineString.class, new GMLGeoToolsXmlSerializer<>(LineString.class, GML._Geometry));
-            addSerializer(MultiPolygon.class, new GMLGeoToolsXmlSerializer<>(MultiPolygon.class, GML._Geometry));
-            addSerializer(MultiSurface.class, new GMLGeoToolsXmlSerializer<>(MultiSurface.class, GML._Geometry));
-            addSerializer(Envelope.class, new GMLGeoToolsXmlSerializer<>(Envelope.class, GML.Envelope));
+            addSerializer(Point.class, new GMLGeoToolsXmlSerializer<>(Point.class, GML._Geometry, new Encoder(new org.geotools.gml2.GMLConfiguration())));
+            addSerializer(LineString.class, new GMLGeoToolsXmlSerializer<>(LineString.class, GML._Geometry, new Encoder(new org.geotools.gml3.GMLConfiguration())));
+            addSerializer(MultiPolygon.class, new GMLGeoToolsXmlSerializer<>(MultiPolygon.class, GML._Geometry, new Encoder(new org.geotools.gml2.GMLConfiguration())));
+            addSerializer(MultiSurface.class, new GMLGeoToolsXmlSerializer<>(MultiSurface.class, GML._Geometry, new Encoder(new org.geotools.gml3.GMLConfiguration())));
+            addSerializer(Envelope.class, new GMLGeoToolsXmlSerializer<>(Envelope.class, GML.Envelope, new Encoder(new org.geotools.gml3.GMLConfiguration())));
         }
 
         private NamespaceXmlFactory generateNamespaceXmlFactory() {

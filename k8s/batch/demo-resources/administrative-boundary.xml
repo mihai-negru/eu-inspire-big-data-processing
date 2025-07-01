@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FeatureCollection>
+    <member>
+        <AdministrativeBoundary id="AdministrativeBoundary_DESHPDHK0005YROI">
+            <country href="http://inspire.ec.europa.eu/codelist/CountryCode/DE"/>
+            <geometry>
+                <LineString id="o11002__administrativeboundary.id.45755976.position.Geom_0" srsName="http://www.opengis.net/def/crs/epsg/0/25832" srsDimension="2">
+                    <posList>599721.064 5914972.951 599722.436 5914972.255</posList>
+                </LineString>
+            </geometry>
+            <inspireId>
+                <Identifier>
+                    <localId>AdministrativeBoundary_DESHPDHK0005YROI</localId>
+                    <namespace>https://registry.gdi-de.org/id/de.sh.inspire.au.alkis</namespace>
+                </Identifier>
+            </inspireId>
+            <nationalLevel href="http://inspire.ec.europa.eu/codelist/AdministrativeHierarchyLevel/2ndOrder"/>
+            <nationalLevel href="http://inspire.ec.europa.eu/codelist/AdministrativeHierarchyLevel/4thOrder"/>
+            <nationalLevel href="http://inspire.ec.europa.eu/codelist/AdministrativeHierarchyLevel/6thOrder"/>
+            <beginLifespanVersion>2016-02-12T06:55:37Z</beginLifespanVersion>
+            <endLifespanVersion nil="true"/>
+            <legalStatus nilReason="unpopulated" nil="true"/>
+            <technicalStatus nilReason="unpopulated" nil="true"/>
+            <admUnit nil="true" nilReason="unpopulated"/>
+        </AdministrativeBoundary>
+    </member>
+</FeatureCollection>

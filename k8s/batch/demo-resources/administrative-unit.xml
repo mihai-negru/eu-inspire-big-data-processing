@@ -6,7 +6,7 @@
             <upperCorner>3015534.2357642837 4071352.202985776</upperCorner>
         </Envelope>
     </boundedBy>
-    <member>
+    <featureMember>
         <AdministrativeUnit id="AU.02_3rdOrder">
             <country href="http://inspire.ec.europa.eu/codelist/CountryCode/DE"/>
             <geometry>
@@ -58,5 +58,5 @@
             <coAdminister nilReason="unpopulated" nil="true"/>
             <administeredBy nilReason="unpopulated" nil="true"/>
         </AdministrativeUnit>
-    </member>
+    </featureMember>
 </FeatureCollection>

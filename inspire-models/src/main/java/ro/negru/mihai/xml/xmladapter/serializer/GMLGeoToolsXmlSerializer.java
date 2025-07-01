@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
-import org.geotools.gml3.GMLConfiguration;
 import org.geotools.xsd.Encoder;
 
 import javax.xml.namespace.QName;
@@ -16,13 +15,13 @@ public class GMLGeoToolsXmlSerializer<T> extends StdSerializer<T> {
     private final QName qname;
     private final Encoder encoder;
 
-    public GMLGeoToolsXmlSerializer(Class<T> clazz, QName qname) {
+    public GMLGeoToolsXmlSerializer(Class<T> clazz, QName qname, Encoder encoder) {
         super(clazz);
         this.qname = qname;
 
-        encoder = new Encoder(new GMLConfiguration());
-        encoder.setOmitXMLDeclaration(true);
-        encoder.setNamespaceAware(true);
+        this.encoder = encoder;
+        this.encoder.setOmitXMLDeclaration(true);
+        this.encoder.setNamespaceAware(true);
     }
 
     @Override
