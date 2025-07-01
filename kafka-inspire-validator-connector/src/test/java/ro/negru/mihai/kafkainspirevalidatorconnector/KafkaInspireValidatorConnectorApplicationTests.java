@@ -30,9 +30,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -48,18 +46,21 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 )
 class KafkaInspireValidatorConnectorApplicationTests {
     @Container
-    static KafkaContainer kafka = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.5.0"))
-            .withEmbeddedZookeeper();
+    static KafkaContainer kafka = new KafkaContainer(
+        DockerImageName.parse("confluentinc/cp-kafka:7.5.0")
+        ).withEmbeddedZookeeper()
+         .withCreateContainerCmdModifier(cmd -> cmd.withUser("root"));
 
     @Container
-    static GenericContainer<?> validator = new GenericContainer<>(DockerImageName.parse("ghcr.io/inspire-mif/helpdesk-validator/inspire-validator:2024.3"))
-            .withExposedPorts(8080)
-            .waitingFor(
-                    org.testcontainers.containers.wait.strategy.Wait
-                            .forHttp("/validator/v2/status")
-                            .forStatusCode(200)
-                            .withStartupTimeout(Duration.ofMinutes(10))
-            );
+    static GenericContainer<?> validator = new GenericContainer<>(
+        DockerImageName.parse("ghcr.io/inspire-mif/helpdesk-validator/inspire-validator:2024.3")
+        ).withExposedPorts(8080)
+         .waitingFor(
+                org.testcontainers.containers.wait.strategy.Wait
+                   .forHttp("/validator/v2/status")
+                   .forStatusCode(200)
+                   .withStartupTimeout(Duration.ofMinutes(10))
+        );
 
     @DynamicPropertySource
     static void overrideProps(DynamicPropertyRegistry registry) {
@@ -125,17 +126,27 @@ class KafkaInspireValidatorConnectorApplicationTests {
     void testRoundtripThroughKafkaAndValidator() throws IOException, InterruptedException {
         String xml = Files.readString(Path.of("src/test/resources/sample.xml"));
 
-        String requestId = UUID.randomUUID().toString();
-        String groupRequestId = UUID.randomUUID().toString();
-        TestRequest req = new TestRequest(requestId, groupRequestId, "geographicalnames", xml);
+        final Set<String> requests = new HashSet<>();
+        for (int i = 0; i < 1; ++i) {
+            String requestId = UUID.randomUUID().toString();
+            String groupRequestId = UUID.randomUUID().toString();
+            TestRequest req = new TestRequest(requestId, groupRequestId, "geographicalnames", xml);
 
-        System.err.println("Sending the message");
-        kafkaTemplate.send("validator.input", requestId, req);
+            requests.add(requestId);
 
-        TestResponse resp = responses.poll(10, java.util.concurrent.TimeUnit.MINUTES);
-        assertThat(resp).as("should have received exactly one TestResponse").isNotNull();
-        assertThat(resp.getId()).isEqualTo(requestId);
+            System.err.println("Sending the message");
+            kafkaTemplate.send("validator.input", requestId, req);
+        }
 
-        System.out.println(resp.getStatus());
+        for (int i = 0; i < 1; ++i) {
+            TestResponse resp = responses.poll(10, java.util.concurrent.TimeUnit.MINUTES);
+            assertThat(resp).isNotNull();
+            assertThat(resp.getId()).isNotNull();
+            assertThat(requests.contains(resp.getId())).isTrue();
+            assertThat(resp.getGroupId()).isNotNull();
+            assertThat(resp.getStatus()).isNotNull();
+            assertThat(resp.getStatus().getEtsAssertions()).isNotNull();
+            assertThat(resp.getStatus().getEtsAssertions().isEmpty()).isFalse();
+        }
     }
 }
