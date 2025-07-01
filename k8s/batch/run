@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+NAME="$1"
+FILENAME="$2"
+
+kubectl create configmap "$NAME" \
+  --from-file="$FILENAME" \
+  --from-file=schema.py \
+  --from-file=consumer.py \
+  --from-file=demo-resources/ \
+  --dry-run=client -o yaml | kubectl apply -f -
+
+echo "
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kafka-job-$NAME
+spec:
+  template:
+    spec:
+      containers:
+      - name: kafka-job-$NAME
+        image: python:3.11-slim
+        command:
+        - /bin/sh
+        - -c
+        - |
+          pip install confluent-kafka && python /app/$FILENAME
+        volumeMounts:
+        - name: script-volume
+          mountPath: /app
+        workingDir: /app
+      restartPolicy: Never
+      volumes:
+      - name: script-volume
+        configMap:
+          name: $NAME
+  backoffLimit: 2
+" | kubectl apply -f -
