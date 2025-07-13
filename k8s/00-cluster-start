@@ -3,11 +3,11 @@
 sudo brew services start socket_vmnet
 
 minikube config set cpus 10
-minikube config set memory 16384
-minikube config set disk-size 100g
+minikube config set memory 24576
+minikube config set disk-size 200g
 
-minikube start --driver=qemu --network=socket_vmnet --cni=calico
-sudo minikube tunnel > /dev/null 2>&1 < /dev/null &
+minikube start --driver=qemu --network=socket_vmnet #--cni=calico
+#sudo minikube tunnel > /dev/null 2>&1 < /dev/null &
 
 kubectl apply -f config/namespaces.yaml --server-side
 
@@ -19,6 +19,12 @@ for namespace in $(kubectl get namespaces -o jsonpath='{range .items[*]}{.metada
         --docker-email="$GITHUB_REGISTRY_EMAIL"                                                         \
         --dry-run=client -o yaml | kubectl apply -f -
 done
+
+# PROMETHEUS
+kubectl apply -f prometheus/secret.yaml
+helm upgrade --install kube-prometheus-stack prometheus-community/kube-prometheus-stack                 \
+    --namespace=monitoring                                                                              \
+    --values prometheus/values.yaml
 
 # KAFKA
 helm install kafka bitnami/kafka --namespace kafka --values kafka/values.yaml
@@ -56,3 +62,5 @@ kubectl rollout status deployment/validator -n inspire-validator
 kubectl rollout status deployment/flink-inspire -n flink
 
 kubectl port-forward svc/flink-inspire-rest 8081:8081 -n flink > /dev/null 2>&1 < /dev/null &
+kubectl port-forward svc/validator 8082:8080 -n inspire-validator > /dev/null 2>&1 < /dev/null &
+kubectl port-forward svc/kube-prometheus-stack-grafana 8083:80 -n monitoring > /dev/null 2>&1 < /dev/null &
